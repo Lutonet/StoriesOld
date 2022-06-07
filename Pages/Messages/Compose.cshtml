@@ -1,0 +1,175 @@
+﻿@page
+@model Stories.Pages.Messages.ComposeModel
+@{
+}
+<script>
+
+   Connect.on("receivedMailboxData", (unread, all, deleted, tableData) => {
+
+      unreadCount = unread;
+      allCount = all;
+      deletedCount = deleted;
+
+      refreshNumbers();
+
+   });
+
+   Connect.on("NewMessage", (output) => {
+      unreadCount++;
+      allCount++;
+      refreshNumbers();
+   })
+
+   function refreshNumbers() {
+      $(".unreadCount").html(unreadCount);
+      $(".allMessagesCount").html(allCount);
+      $(".deletedCount").html(deletedCount);
+   }
+
+   function addUser() {
+      var selectedValue = $("#selectRecepient").val();
+      var oldValue = $("#recepients").val();
+      var newValue = oldValue + selectedValue + ";";
+      console.info(newValue);
+
+      $("#recepients").val(newValue);
+   }
+</script>
+<h3>Send Message</h3>
+<hr />
+<div class="row">
+   <div class="error" id="recepientError"></div>
+   <div style="padding: 5px; margin-right: 5px; margin-left: 15px;"><b>Recepients</b></div>
+</div>
+<div class="row">
+   <div class=col-3>
+      <Select id="selectRecepient" onchange="addUser()" class="form-control">
+         <option value="">To: </option>
+         @foreach (var recepient in Model.RecepientNames)
+         {
+            <option value="@recepient" class="form-control">@recepient</option>
+         }
+      </Select>
+   </div>
+   <div class="col-9">
+      <input type="text" id="recepients" class="form-control" />
+   </div>
+</div>
+
+<div class="row">
+   <div class="col-12" style="padding: 5px; margin-left: 15px;"><b>Subject:</b></div>
+</div>
+<div class="row">
+   <div class="col-12">
+      <input type="text" id="subject" class="form-control" />
+   </div>
+</div>
+<hr />
+<div class="row">
+   <div class="col-12">
+      <textarea id="messageText"></textarea>
+   </div>
+</div>
+<hr />
+<div class="row">
+   <div class="col-12" style="text-align:right;"><button class="btn btn-primary" onclick="sendMessage()">Send</button></div>
+</div>
+
+<div class="modal">
+   <div class="modal-body">
+      <div class="close" onclick="closeModal();">
+         <i class="fas fa-times"></i>
+      </div>
+      <h3>Delivery report: </h3>
+      <div id="modalBody">
+      </div>
+      <div id="showError" style="display:none;">
+         <hr />
+         <div id="errorText" style="text-align:center" width: 100%;>
+         </div>
+         <hr />
+      </div>
+   </div>
+</div>
+
+<script src="~/js/jodit.min.js"></script>
+<script>
+   var actualPage = "compose";
+   var wasError = false;
+
+   var body = new Jodit("#messageText", {
+      height: 400,
+      theme: "dark",
+      toolbarButtonSize: "small",
+      "buttons": "source,bold,italic,underline,strikethrough,eraser,superscript,subscript,ul,ol,indent,outdent,left,font,fontsize,paragraph,classSpan"
+   })
+
+   function sendMessage() {
+      var recepient = $("#recepients").val();
+      var subject = $("#subject").val();
+      var bodyVal = body.getEditorValue();
+
+      Connect.invoke("SendAsync", recepient, bodyVal, subject);
+   }
+
+   function closeModal() {
+      $(".modal").removeClass('active');
+      if (wasError == false)
+         window.location = "/Messages";
+      wasError = false;
+   }
+
+   Connect.on("deliveryReport", (jsonData) => {
+      var success = '<span style="font-size: 13px; text-aligh: center;" onclick="hideError()" class="success"><i class="fas fa-check success"></i></span>';
+      var report = JSON.parse(jsonData);
+      console.info(jsonData);
+      console.info("Data Contains " + report.length + " items");
+      var htmlOut = "";
+      htmlOut += "<table class='width: 300px; padding: 5px; margin: 10px; margin-top: 15px; margin-bottom: 10px;'>";
+      htmlOut += "<tr style='margin: 10px;'>";
+      htmlOut += "<th style='align-text: center; width: 250px; padding-bottom: 7px;'>Recepient:</th><th style='width: 50px; padding-bottom: 7px;'>Result:</th>";
+      htmlOut += "</tr>";
+      $("#recepients").val("");
+
+      for (var i = 0; i < report.length; i++) {
+         htmlOut += "<tr style='margin: 5px;'>";
+         htmlOut += "<td>" + report[i].RecepientName + "</td>";
+         htmlOut += "<td style='text-align: center'  onmouseover='document.body.style.cursor =\"pointer\"' onmouseout='document.body.style.cursor=\"default\"'>";
+         if (report[i].Success == true)
+            htmlOut += success;
+         if (report[i].Success == false) {
+            htmlOut += '<span style="font-size: 13px" class="error" onclick="showError(\'' + report[i].ErrorMessage + '\')"><i class="fas fa-times"></i></span>';
+         }
+         htmlOut += "</td>";
+         htmlOut += "</tr>";
+      }
+      htmlOut += "</table>";
+
+      console.info(htmlOut);
+      $("#modalBody").html(htmlOut).show();
+      $(".modal").addClass("active");
+   });
+
+   function showError(message) {
+      $("#errorText").html(message);
+      $("#showError").show(300);
+   }
+
+   function hideError() {
+      $("#showError").hide(300);
+   }
+</script>
+@if (Model.AddScriptForResponse)
+{
+   <script>
+        $("#recepients").val("@Model.Message.User.DisplayedName" + ";");
+        $("#subject").val("RE: @Model.Message.Subject");
+        var htmlToEditor = "<br /><br />";
+        htmlToEditor += "<hr />";
+        htmlToEditor += "<h3> === Original Message ===</h3>";
+        htmlToEditor += "<i> @Html.Raw(Model.Message.MessageText) </i>";
+        body.setEditorValue(htmlToEditor);
+        body.insertAtPoint(0, 0);
+   </script>
+
+}

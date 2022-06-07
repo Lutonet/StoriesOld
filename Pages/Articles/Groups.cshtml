@@ -1,0 +1,226 @@
+﻿@page
+@model Stories.Pages.Articles.GroupsModel
+@{
+}
+<h3>Category Types</h3>
+<hr />
+<div class="row">
+   <div class="col-4" style="padding: 5px; align-content: center; padding-left: 15px;">
+      <b>Select type of articles to display:</b>
+   </div>
+   <div class="col-8" style="padding: 5px;">
+      <select id="CategoryGroupSelect" onchange="loadCategoryGroup()" class="form-control">
+         <option value=""> --- </option>
+         @foreach (var group in Model.Groups)
+         {
+            <option value="@group.Id">@group.GroupName</option>
+         }
+      </select>
+   </div>
+</div>
+<div class="row">
+   <div id="articleHead" style="margin-left: auto; margin-right: auto; padding-left: 10px; padding-right: 10px; margin-top: 10px; display: none;">
+   </div>
+   <div style="width: 100%; margin-left: 5px; margin-right: 5px; margin-top: 10px; display: none;" id="newArticles">
+      <div id="articleTable" style="display: none">
+      </div>
+   </div>
+</div>
+<hr />
+
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+<script>
+   noLeft();
+   $(function () { $("#newArticles").hide() });
+
+    $(".articleCount").html("@Model.ArticlesCount");
+   $(".categoriesCount").html("@Model.CategoriesCount");
+   $(".groupsCount").html("@Model.CategoryGroupsCount");
+
+   var articleTable = new Tabulator("#newArticles", {
+      groupBy: ["CategoryName"],
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      index: "ArticleId",
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 10,
+      paginationSizeSelector: [10, 25, 50, 100],
+      autoColumns: false,
+      initialSort: [
+         { column: "CategoryName", dir: "asc" },
+      ],
+      columns: [
+         { title: "Article Id", field: "ArticleId" },
+         { title: "User Id", field: "AuthorId" },
+         { title: "Category Id", field: "CategoryId" },
+         {
+            title: "Title",
+            field: "Title",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+         },
+         {
+            title: "Author",
+            field: "AuthorName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var authorId = row.getCell("AuthorId").getValue();
+               window.location = "/My/Index?id=" + authorId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Published",
+            field: "Published",
+            width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+         },
+         {
+            title: "Category",
+            field: "CategoryName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryId = row.getCell("CategoryId").getValue();
+               window.location = "/Articles/Categories?id=" + categoryId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Read by",
+            field: "ReadCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-eye'></i>";
+            }
+         },
+         {
+            title: "Likes",
+            field: "LikesCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-thumbs-up'></i>";
+            }
+         },
+         {
+            title: "Critics",
+            field: "CriticsCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-comments'></i>";
+            }
+         },
+         {
+            title: "You seen it",
+            field: "ReadByUser",
+            hozAlign: "center",
+            formatter: "tickCross",
+            headerSort: false,
+            titleFormatter: function (title, titleFormatterParams, onRentered) {
+               return '<i class="fas fa-book-open"></i>';
+            }
+         },
+         {
+            title: "Rating",
+            field: "AverageStars",
+            formatter: "star",
+            formatterParams: { stars: 5 }, hozAlign: "center", width: 100,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-star'></i>";
+            }
+         },
+      ],
+   });
+
+   function loadCategoryGroup() {
+      var CategoryGroupId = $("#CategoryGroupSelect").val();
+      $.get("/API/GetCategoryGroupDetails?id=" + CategoryGroupId,
+         function (result, status) {
+
+            htmlArticleHead = "";
+            htmlArticleTable = "";
+
+            if (status == "success") {
+               $("#newArticles").hide();
+               $("#articleTable").hide();
+               $("#articleHead").html("");
+               $("#articleTable").html("");
+               var objectData = JSON.parse(result);
+               if (objectData.IsError == true) {
+                  $("#articleHead").addClass('ui-state-error ui-corner-all');
+                  htmlArticleHead += "<b>Error: <b><br>" + objectData.ErrorMessage;
+                  htmlArticleHead += "<br>";
+                  $("#articleHead").html(htmlArticleHead);
+                  $("#articleHead").show(300);
+                  $("#articleTable").hide();
+               } else {
+                  var tableData = JSON.parse(objectData.JsonData);
+                  if (tableData == null || tableData.length == 0) {
+                     htmlArticleHead = "";
+                     htmlArticleHead += "<h3>Category Type <span class='moderator'>" + objectData.CategoryGroupName + "</span></h3>";
+                     htmlArticleHead += "<hr>";
+                     htmlArticleHead += "<h4> No articles of this category type </h4>";
+                     htmlArticleHead += "<hr>";
+
+                     $("#articleHead").html(htmlArticleHead);
+                     $("#articleHead").show(300);
+                     $("#articleTable").hide();
+                       }
+                  else {
+                     htmlArticleHead = "";
+                     htmlArticleHead += "<h3>Category Type <span class='moderator'>" + objectData.CategoryGroupName + "</span></h3>";
+                     htmlArticleHead += "<hr>";
+
+                     articleTable.setData(tableData);
+                     articleTable.hideColumn("AuthorId");
+                     articleTable.hideColumn("ArticleId");
+                     articleTable.hideColumn("CategoryId");
+                     articleTable.redraw();
+
+                     $("#articleHead").show(300);
+                     $("#newArticles").show(300);
+                     $("#articleTable").show(300);
+                     setTimeout(function () {
+                        articleTable.hideColumn("AuthorId");
+                        articleTable.hideColumn("ArticleId");
+                        articleTable.hideColumn("CategoryId");
+                        articleTable.redraw();
+                     }, 300);
+                  }
+               }
+            }
+         }
+      )
+   };
+</script>

@@ -1,0 +1,162 @@
+﻿@page
+@model Stories.Pages.Authors.IndexModel
+@{
+}
+<h1>Authors</h1>
+
+<h3> Authors List</h3>
+<div class="row">
+   <div class="col-12" id="tableDiv" style="display: none;">
+      <div id="tableUsers" style="width: 95%; margin-left: auto; margin-right: auto;">
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div id="userDiv" style="width: 90%; margin-top: 10px; margin-left: auto; margin-right: auto; display: none; padding: 1em;">
+      <div id="userCard">
+      </div>
+   </div>
+</div>
+
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+<script src="/js/index.js"></script>
+<script>
+
+
+/* Tabulator table - list of Authors */
+var authorData = '@Html.Raw(Model.JsonList)';
+if (authorData == null) {
+   $("#tableUsers").html("<h3> No authors in the system yet </h3>");
+   $("tableDiv").show(300);
+}
+if (JSON.parse(authorData) != null) {
+   var tableUsers = new Tabulator("#tableUsers",
+      {
+         layout: "fitColumns",
+         responsiveLayout: "hide",
+         index: "AuthorId",
+         tooltips: true,
+         data: JSON.parse(authorData),
+         addRowPos: "top",
+         pagination: "local",
+         paginationSize: 5,
+         paginationSizeSelector: [5, 10, 15, 20, 30],
+         autoColumns: false,
+         initialSort: [
+            { column: "AuthorName", dir: "asc" },
+         ],
+         columns: [
+            {
+               title: "Author",
+               field: "AuthorName",
+               widthGrow: 5,
+               cellClick: function(e, cell) {
+                  var row = cell.getRow();
+                  var rowIndex = row.getIndex();
+                  LoadAuthor(rowIndex);
+               },
+               formatter: function(cell, formatterParams, onRendered) {
+                  return '<a href="#"<b>' + cell.getValue() + '</b></a>';
+               },
+            },
+            {
+               title: "Registered",
+               field: "Registered",
+               width: 100,
+               formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var offset = new Date().getTimezoneOffset();
+                  d.setMinutes(d.getMinutes() - offset);
+                  var formated = ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
+                    
+
+                  return formated;
+               }
+            },
+            {
+               title: "Articles",
+               field: "ArticlesCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='fas fa-book-open'></i>";
+               }
+            },
+            {
+               title: "Likes",
+               field: "LikesCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='far fa-thumbs-up'></i>";
+               }
+            },
+            {
+               title: "Critics",
+               field: "CriticsCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='far fa-comments'></i>";
+               }
+            },
+            {
+               title: "Online Time",
+               field: "OnlineTime",
+               width: 110, 
+               formatter: function(cell, formatterParams, onRendered) {
+                  var d = cell.getValue();
+                  d = d.substr(0, d.length - 8);
+                  return d;
+               }
+            },
+            {
+               title: "Last seen",
+               field: "LastSeen",
+               width: 140,
+               formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var offset = new Date().getTimezoneOffset();
+                  d.setMinutes(d.getMinutes() - offset);
+                  var formated = ("0" + d.getDate()).slice(-2) + "/"
+                     + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                     + d.getFullYear() + " "
+                     + ("0" + d.getHours()).slice(-2)
+                     + ":" + ("0" + d.getMinutes()).slice(-2)
+                     + ":" + ("0" + d.getSeconds()).slice(-2);
+
+                  return formated;
+               }
+            },
+            { title: "AuthorId", field: "AuthorId" },
+
+
+         ],
+
+      });
+   $("#tableDiv").show(300);
+
+}
+setTimeout(function() {
+      tableUsers.hideColumn("AuthorId");
+      tableUsers.redraw();
+
+   },
+   250);
+   </script>
+   @if(Model.showProfile)
+    {
+        <script>
+       $.get("/Profile?id=@Model.showProfileId", function(data, status){
+    $("#userCard").html(data);
+    $("#userDiv").show(300);
+  });
+        </script>
+    }
+    <script>
+function LoadAuthor(id) {
+    $.get("/Profile?id="+id, function(data, status){
+    $("#userCard").html(data);
+    $("#userDiv").show(300);
+  });
+}
+
+
+</script>

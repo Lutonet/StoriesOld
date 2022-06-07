@@ -1,0 +1,369 @@
+﻿a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+html {
+    font-size: 13px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 13px;
+    }
+}
+
+body {
+    /* Margin bottom by footer height */
+
+    background-repeat: no-repeat;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: auto;
+    max-width: 100%;
+}
+
+.navbar {
+    min-height: 50px;
+}
+
+.nav-link {
+    vertical-align: middle;
+    font-size: small;
+}
+
+    .nav-link:active {
+        font-weight: bold;
+    }
+
+.nav-item {
+    font-weight: bold;
+}
+
+.main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    max-height: -webkit-calc(100% - 100px);
+    /* Opera */
+    max-height: -o-calc(100% - 100px);
+    /* Standard */
+    max-height: calc(100% - 100px);
+    /* height: -webkit-calc(100% - 100px);
+    /* Opera */
+    /*  height: -o-calc(100% - 100px);
+    /* Standard */
+    /* height: calc(100% - 100px); */
+}
+
+.side-menu {
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+.room-button {
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    margin: 0.75rem 1.0rem 0;
+    border-radius: 8px;
+    height: 32px;
+    padding: 5px;
+}
+
+    .room-button:hover {
+        text-decoration: none;
+    }
+
+    .room-button > strong {
+        font-size: 36px;
+    }
+
+.chat {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+}
+
+.chat-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 1rem;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    margin-top: auto;
+}
+
+.bubble:first-child {
+    margin-top: auto;
+}
+
+.chat-input {
+    min-height: 40px;
+}
+
+.chat-control {
+    margin-top: 3px;
+    padding: 3px;
+    vertical-align: central;
+}
+
+.message {
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.2rem;
+    flex-grow: 1;
+}
+
+.bubble {
+    font-size: 15px;
+    line-height: 1.1em;
+    border-radius: 30px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding: 10px;
+    text-align: center;
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    /* margin-right: 10px;*/
+    align-content: center;
+    align-items: center;
+    width: 65%;
+    max-width: 100%;
+    min-width: 60%;
+}
+
+.bubble-bottom-left:before {
+    content: "";
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-left: 24px solid;
+    border-right: 12px solid transparent;
+    border-top: 12px solid;
+    border-bottom: 20px solid transparent;
+    left: 32px;
+    bottom: -24px;
+}
+
+.bubble-bottom-right:before {
+    content: "";
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-right: 24px solid;
+    border-left: 12px solid transparent;
+    border-top: 12px solid;
+    border-bottom: 20px solid transparent;
+    right: 30px;
+    bottom: -24px;
+    margin-left: auto;
+}
+
+.div-right {
+    position: relative;
+    right: 5px;
+    justify-content: right;
+    align-content: center;
+    margin-left: auto;
+}
+
+.div-center {
+    position: relative;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+input {
+    line-height: 1.3em;
+    font-size: medium;
+    height: 35px;
+}
+
+select {
+    line-height: 1.3em;
+    font-size: medium;
+    height: 35px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    min-height: 100vh;
+    min-width: 100vw;
+    z-index: 200;
+    top: 0;
+    left: 0;
+    background-color: rgba(0.2, 0.2, 0.2, 0.8);
+}
+
+    .modal.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+.modal-body {
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    flex: none;
+    border-radius: 8px;
+    border: solid 1px;
+}
+
+    .modal-body > * {
+        margin-top: 0.5rem;
+    }
+
+    .modal-body > header {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .modal-body > div > input {
+        width: 100%;
+    }
+
+    .modal-body > .close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        margin-top: 0;
+        padding-top: 0;
+        margin-right: 0;
+        padding-right: 0;
+    }
+
+    .modal-body > footer {
+        text-align: center;
+    }
+
+.modal-admin {
+    min-width: 700px;
+    border: solid 1px;
+    border-radius: 5px;
+    background-color: rgba(128, 128, 128, 0.3);
+}
+
+    .modal-admin > .close {
+        position: relative;
+        top: 0px;
+        right: 0px;
+        margin-top: 0px;
+        padding-top: 0px;
+        margin-right: 3px;
+        padding-right: 0px;
+    }
+
+.welcome {
+    text-align: center;
+    padding: 10px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+    .tooltip .tooltiptext {
+        width: 120px;
+        top: 100%;
+        left: 50%;
+        margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+    }
+
+        .tooltip .tooltiptext::after {
+            content: " ";
+            position: absolute;
+            bottom: 100%; /* At the top of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent black transparent;
+        }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        text-align: center;
+        border-radius: 3px;
+        padding: 5px 5px;
+        margin-left: 5px;
+        margin-top: 10px;
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+.link:hover {
+    text-decoration: underline;
+    cursor: grab;
+}
+
+.link:active {
+    text-decoration: underline;
+    cursor: grab;
+}
+
+.system-message {
+    width: 100%;
+    border: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    color: white;
+    background-color: rgb(0,0,100, 0.4);
+    text-align: center;
+    display: none;
+}
+
+.admin-message {
+    width: 100%;
+    border: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    color: white;
+    background-color: rgb(100,0,0, 0.4);
+    text-align: center;
+    display: none;
+}
+
+.invitation {
+    width: 100%;
+    border: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    color: white;
+    background-color: rgb(0,100,0, 0.4);
+    text-align: center;
+    display: none;
+}

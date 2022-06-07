@@ -1,0 +1,117 @@
+﻿@page
+@model Stories.Pages.Messages.InboxModel
+@{
+}
+
+<div class="unreadMessages" style="display: none;">
+   <h3> Mailbox for @Model.ActualUser.DisplayedName </h3>
+   <hr />
+   <div id="messageList">
+   </div>
+   <hr />
+</div>
+<div class="row">
+   <div id="messageRead" class="col-10 offset-1" style="display: none;">
+   </div>
+</div>
+
+<style>
+   .tabulator-row {
+      height: 2.1em;
+   }
+</style>
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+
+<script>
+   var actualPage = "inbox";
+
+   var messageTable = new Tabulator("#messageList", {
+      rowClick: function (e, row) {
+         //e - the click event object
+         //row - row component
+         objectID = row.getData().MessageId;
+         ReadMessage(objectID);
+      },
+      rowMouseEnter: function (e, row) {
+         document.body.style.cursor = "pointer";
+      },
+      rowMouseLeave: function (e, row) {
+         document.body.style.cursor = "default";
+      },
+      index: "MessageId",
+      movableRows: true,
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 10,
+      movableColumns: true,
+      resizableRows: true,
+      selectable: false,
+      initialSort: [
+         { column: "Sent", dir: "desc" },
+      ],
+      columns: [
+         {
+            title: "", field: "MessageId", headerSort: false, formatter: function (cell, formatterParams, onRendered) {
+               return "";
+            }
+         },
+         { title: "From:", field: "SenderName", width: 140 },
+         { title: "Subject:", field: "Subject", widthGrow: 5 },
+         {
+            title: "Received At:", field: "Sent", width: 130, formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var formated = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+               return formated;
+            }
+         },
+         { title: "Seen", field: "WasRead", width: 70, formatter: "tickCross", hozAlign: "center" },
+
+         {
+            title: "Delete", field: "DeleteLink", width: 60, headerSort: false, formatter: function (cell, formatterParams, onRendered) {
+               return cell.getValue();
+            }
+         },
+      ],
+      rowFormatter: function (row) {
+         //row - row component
+
+         var data = row.getData();
+
+         if (data.WasRead == false) {
+            row.getElement().style.fontWeight = "bold";
+
+         }
+      },
+   });
+
+   Connect.on("receivedMailboxData", (tableData) => {
+
+      if (tableData != "") {
+         var data = JSON.parse(tableData);
+         messageTable.setData(data)
+            .then(function () {
+               setTimeout(function () {
+                  messageTable.hideColumn("MessageId");
+                  messageTable.redraw();
+               }, 200);
+
+               $(".unreadMessages").show(300);
+
+            });
+      }
+   });
+
+   Connect.on("NewMessage", (jsonOutput) => {
+      Connect.invoke("InitializeMailbox", actualPage).catch(function (err) {
+         return console.error(err.toString());
+      });
+   });
+
+   Connect.on("hideEnvelope", () => {
+      $("#newMessages").html("");
+      $("#newMessages").hide(300);
+   })
+</script>

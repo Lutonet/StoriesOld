@@ -1,0 +1,332 @@
+﻿@page
+@model Stories.Pages.Articles.IndexModel
+@{
+}
+<div>
+   <h3>All Articles</h3>
+   <div id="newArticles">
+   </div>
+   <hr />
+</div>
+<h3>Article in Collections</h3>
+<hr>
+<div class="row">
+   <div class="col-4 redborder-right">
+      @foreach (var collection in Model.Collections)
+      {
+         <div style="padding: 3px">
+            <a href="#" class="nav-link" onclick="ListArticles(@collection.Id)" style="font-size: 15px;">@collection.CollectionName</a>
+         </div>
+      }
+   </div>
+   <div class="col-8" id="articlesInCollection" style="display: none">
+      <div id="articleHead" style="width: 95%; margin-left: auto; margin-right: auto;">
+      </div>
+      <div id="articleTable" style="width: 95%; margin-left: auto; margin-right: auto;">
+      </div>
+   </div>
+</div>
+<hr />
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+<script>
+   noLeft();
+
+   var articleTable = new Tabulator("#articleTable", {
+       layout: "fitColumns",
+       responsiveLayout: "hide",
+       index: "ArticleId",
+       tooltips: true,
+       addRowPos: "top",
+       pagination: "local",
+       paginationSize: 5,
+       paginationSizeSelector: [5, 10, 15, 20, 30],
+       autoColumns: false,
+       initialSort: [
+        { column: "Order", dir: "asc" },
+       ],
+       columns: [
+        { title: "Article Id", field: "ArticleId" },
+        { title: "Category Id", field: "CategoryId" },
+        {
+            headerSort: false,
+            title: "Order",
+            field: "Order",
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+                return "<i class='fas fa-sort-numeric-down'></i>";
+            }
+        },
+        {
+            title: "Title",
+            field: "Title",
+            headerSort: false,
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+        },
+        {
+            title: "Category",
+            field: "CategoryName",
+            headerSort: false,
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryId = row.getCell("CategoryId").getValue();
+               window.location = "/Articles/Categories?id=" + categoryId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Published",
+            field: "Published",
+            headerSort: false,
+            width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+         },
+         {
+            title: "Read by",
+            field: "ReadersCount",
+            headerSort: false,
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-eye'></i>";
+            }
+         },
+         {
+            title: "You seen it",
+            field: "ReadByYou",
+            headerSort: false,
+            hozAlign: "center",
+            formatter: "tickCross",
+            headerSort: false,
+            titleFormatter: function (title, titleFormatterParams, onRentered) {
+               return '<i class="fas fa-book-open"></i>';
+            }
+         },
+
+       ]
+   });
+
+var newArticleData = '@Html.Raw(Model.jsonNew)';
+   console.info(newArticleData);
+   var newArticleTable = JSON.parse(newArticleData);
+
+   var newArticles = new Tabulator("#newArticles", {
+      groupBy: ["CategoryGroupName", "CategoryName"],
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      index: "ArticleId",
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 10,
+      paginationSizeSelector: [10, 25, 50, 100],
+      data: newArticleTable,
+      autoColumns: false,
+      initialSort: [
+         { column: "CategoryName", dir: "desc" },
+      ],
+      columns: [
+         { title: "Article Id", field: "ArticleId" },
+         { title: "User Id", field: "AuthorId" },
+         { title: "Category Id", field: "CategoryId" },
+         { title: "Category Group Id", field: "CategoryGroupId" },
+         {
+            title: "Title",
+            field: "Title",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+         },
+         {
+            title: "Author",
+            field: "AuthorName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var authorId = row.getCell("AuthorId").getValue();
+               window.location = "/My/Index?id=" + authorId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Published",
+            field: "Published",
+            width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+         },
+         {
+            title: "Category",
+            field: "CategoryName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryId = row.getCell("CategoryId").getValue();
+               window.location = "/Articles/Categories?id=" + categoryId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Article Type",
+            field: "CategoryGroupName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryGroupId = row.getCell("CategoryGroupId").getValue();
+               window.location = "/Articles/Groups?id=" + categoryGroupId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Read by",
+            field: "ReadCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-eye'></i>";
+            }
+         },
+         {
+            title: "Likes",
+            field: "LikesCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-thumbs-up'></i>";
+            }
+         },
+         {
+            title: "Critics",
+            field: "CriticsCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-comments'></i>";
+            }
+         },
+         {
+            title: "You seen it",
+            field: "ReadByUser",
+            hozAlign: "center",
+            formatter: "tickCross",
+            headerSort: false,
+            titleFormatter: function (title, titleFormatterParams, onRentered) {
+               return '<i class="fas fa-book-open"></i>';
+            }
+         },
+         {
+            title: "Rating",
+            field: "rating",
+            formatter: "star",
+            formatterParams: { stars: 5 }, hozAlign: "center", width: 100,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-star'></i>";
+            }
+         },
+      ],
+   });
+
+   newArticles.hideColumn("ArticleId");
+   newArticles.hideColumn("AuthorId");
+   newArticles.hideColumn("CategoryId");
+   newArticles.hideColumn("CategoryGroupId");
+   $(".articleCount").html("@Model.ArticlesCount");
+   $(".categoriesCount").html("@Model.CategoriesCount");
+   $(".groupsCount").html("@Model.CategoryGroupsCount");
+
+   var htmlArticleHead = "";
+   var htmlArticleTable = "";
+
+   function ListArticles(CollectionId){
+        $.get("/API/GetArticlesInCollection?id="+CollectionId,
+        function(result, status){
+
+            htmlArticleHead = "";
+            htmlArticleTable = "";
+
+            if (status == "success") {
+                var objectData = JSON.parse(result);
+                if (objectData.IsError == true){
+                    $("#articleHead").addClass('ui-state-error ui-corner-all');
+                       htmlArticleHead +="<b>Error: <b><br>" + objectData.ErrorMessage;
+                       htmlArticleHead +="<br>";
+                       $("#articleHead").html(htmlArticleHead);
+                       $("#articlesInCollection").show(300);
+                } else {
+                    htmlArticleHead +="<h3>Collection "+objectData.CollectionName+"</h3>";
+                    htmlArticleHead +="<hr>";
+                    htmlArticleHead +="<div class='text-center'>"+objectData.CollectionDescription+"</div>";
+                    htmlArticleHead +="<hr>";
+                    $("#articleHead").html(htmlArticleHead);
+                    var tableData = JSON.parse(objectData.JsonData);
+                    console.info(tableData.length);
+                    if (tableData.length > 0) {
+                        articleTable.setData(tableData);
+                        articleTable.hideColumn("ArticleId");
+                        articleTable.hideColumn("CategoryId");
+                        articleTable.redraw();
+                    } else {
+                        htmlArticleTable = "<h3> No articles in collection </h3>";
+                      $("#articleTable").html(htmlArticleTable);
+                    }
+                      $("#articlesInCollection").show(300);
+                      setTimeout(function (){
+                       articleTable.hideColumn("ArticleId");
+                       articleTable.hideColumn("CategoryId");
+                       articleTable.redraw();
+                       }, 300);
+                   }
+              }
+        });
+   }
+</script>

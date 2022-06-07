@@ -1,0 +1,149 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject ICookieService cookieService
+@using Stories.Services;
+@using Stories.Model;
+@{ 
+    string Theme = "Light";
+    User user = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>@ViewData["Title"] Stories</title>
+   <script src="~/lib/jquery/dist/jquery.min.js"></script>
+   <script src="~/js/site.js" asp-append-version="true"></script>
+   <script src="https://kit.fontawesome.com/5ef6395779.js" crossorigin="anonymous"></script>
+   <link rel="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="~/css/jodit.min.css" />
+   <link rel="stylesheet" href="~/css/croppie.css" />
+   <link rel="stylesheet" href="~/css/site.css" />
+   @if (User.Identity.IsAuthenticated)
+   {
+              
+       string userName = User.Identity.Name;
+       Theme = await cookieService.GetThemeAsync(userName);
+       <script>console.log("User is logged in - loading Theme from the DB");</script>
+   }
+   
+       @if (!User.Identity.IsAuthenticated)
+   {
+        Theme = await cookieService.GetTheme();
+        <script>console.log("User not logged in, loading theme from the cookie");</script>
+   } 
+   <link rel="stylesheet" href="~/css/@Theme/site.css" />
+   <link rel="stylesheet" href="~/css/@Theme/jquery-ui.css" />
+   <link rel="stylesheet" href="~/css/@Theme/jquery-ui.structure.css" />
+   <link rel="stylesheet" href="~/css/@Theme/jquery-ui.theme.css" />
+   <link rel="stylesheet" href="~/css/@Theme/tabulator.css" />
+   <script src="/js/@Theme/jquery-ui.js "></script>
+   <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+   <script src="~/js/signalr/dist/browser/signalr.js"></script>
+   <script src="~/js/realtime.js"></script>
+   @await RenderSectionAsync("Scripts", required: false)
+</head>
+<body>
+   <header>
+      <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+         <div class="container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index">Stories</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+               <span class="navbar-toggler-icon"><i class="fas fa-expand-arrows-alt icon"></i></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+               <ul class="navbar-nav flex-grow-1">
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Articles">Articles</a>
+                  </li>
+                  @if (User.IsInRole("Subscriber"))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/My">My Page</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/My/Friends">Friends
+                        <small><span id="countFriends" title="Friends Online" style="display: none; font-size: 12px; color: white; border-radius: 3.5em; background-color: rgba(0,100,0, 0.7); padding: .5em; margin-left: 0.3em; margin-right: 1em"></span></small>
+                        <small><span id="countFriendRequests" title="Friends Request" style="display: none; font-size: 12px; color: white; border-radius: 3.5em; background-color: rgba(100,50,0, 0.7); padding: .5em; margin-left: 0.3em; margin-right: 1em"></span></small>
+                        
+                        </a>
+                     </li>
+                  }
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Authors">Authors</a>
+                  </li>
+                  @if (User.IsInRole("Subscriber"))
+                  {
+
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Clubs">Clubs</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Messages">Messages
+                        <small><span id="countUnread" title="New messages" style="display: none; font-size: 12px; color: white; border-radius: 3.5em; background-color: rgba(100,100,0, 0.7); padding: .5em; margin-left: 0.3em; margin-right: 1em;"></span></small>
+             
+                        </a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Chat">Chat</a>
+                     </li>
+
+                  }
+                  @if (User.IsInRole(Settings.Moderator))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link moderator" href="/Administration/Moderator">Moderation</a>
+                     </li>
+
+                  }
+                  @if (User.IsInRole(Settings.Redactor))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link redactor" href="/Administration/Redactor">Redaction</a>
+                     </li>
+                  }
+                  @if (User.IsInRole(Settings.Administrator))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link administrator" href="/Administration/Admin">Administration</a>
+                     </li>
+                  }
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Privacy">Privacy</a>
+                  </li>
+               </ul>
+               <partial name="_LoginPartial" />
+            </div>
+         </div>
+      </nav>
+   </header>
+   <div class="flex-grow-0">
+      <main role="main" class="pb-3">
+         <div class="row m-0">
+            <div class="col-md-1" id="preLeft"></div>
+            <div id="left" class="col-md-2 left">
+               <span id="dummy"></span>
+            </div>
+            <div id="body" class="col-md-8 body mb-10">@RenderBody()</div>
+         </div>
+      </main>
+   </div>
+
+   <footer class="border-top footer text-muted navbar">
+      <div class="row">
+         <div class="col-6">
+            2021<sup>&copy;</sup> - Stories - Bohuslav Pařenica
+         </div>
+         <div class="col text-right">
+            <a asp-area="" asp-page="/Privacy">Privacy</a>
+         </div>
+      </div>
+   </footer>
+</body>
+</html>

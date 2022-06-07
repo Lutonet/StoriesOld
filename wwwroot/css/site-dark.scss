@@ -1,0 +1,308 @@
+﻿$chatAdminBackground: rgb(200, 60, 60, 0.2);
+$defaultBackground: #050505;
+$defaultBodyFont: #DADADA;
+$defaultBodyClassBackground: #020202;
+$defaultBodyClassFont: #DADADA;
+$defaultNavlink: #fa9929;
+$defaultNavbar: rgba(56,56,56,0.8);
+$leftBackgroundColor: rgba(5,3,1, 1.0);
+$leftColor: #00aa00;
+$headerLinkFocus: #990000;
+$headerLinkActive: #ff0808;
+$defaultBorderAndFormBackground: #222222;
+$redBorder: #440000;
+$disabledBackground: #220000;
+$disabledColor: gray;
+$formControlValid: #cacaca;
+$highLight: #cccccc;
+$hr: #440000;
+$success: rgb(110, 185, 110);
+$error: #aa0000;
+$information: #0000aa;
+$moderator: dodgerblue;
+$redactor: #00aaaa;
+$my: #6600dd;
+$admin: #bb0000;
+$danger: #660000;
+$borderLight: #1A1A1A;
+$shadow: rgba(100,100,100, 0.5);
+$modalBackground: rgba(25, 25, 25, 0.8);
+
+:root {
+    --jd-color-background-default: $defaultBackground;
+    --jd-color-border: $headerLinkFocus;
+    --jd-color-panel: $defaultBackground;
+    --jd-color-icon: $error;
+}
+
+a {
+    color: $defaultNavlink;
+}
+
+a:hover {
+    color: $formControlValid;
+}
+
+.redborder {
+    border: $hr 1px solid;
+}
+
+.redborder-right {
+    border-right: $hr 1px solid;
+}
+
+.redborder-left {
+    border-left: $hr 1px solid;
+}
+
+.redborder-top {
+    border-left: $hr 1px solid;
+}
+
+.redborder-bottom {
+    border-left: $hr 1px solid;
+}
+
+.btn-primary {
+    color: $defaultBodyFont;
+    background-color: $disabledColor;
+    border-color: $defaultBodyFont;
+}
+
+.btn-primary:hover {
+    color: $defaultBodyFont;
+    border-color: $defaultBodyFont;
+    background-color: $disabledBackground;
+}
+
+.btn-default {
+    color: $defaultNavlink;
+}
+
+.btn-default:hover {
+    color: $headerLinkFocus;
+}
+
+.btn-danger {
+    color: $formControlValid;
+    background-color: $danger;
+}
+
+.btn-danger:hover {
+    background-color: $disabledBackground;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: $defaultNavlink;
+    background-color: $defaultBackground;
+    border-color: $defaultBackground;
+    color: $headerLinkFocus;
+}
+
+.border-top {
+    border-top: 1px solid $borderLight;
+}
+
+.border-bottom {
+    border-bottom: 1px solid $borderLight;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem $shadow;
+}
+
+body {
+    background-color: $defaultBackground;
+    color: $defaultBodyFont;
+}
+
+.navbar {
+    background-color: $defaultNavbar;
+}
+
+.nav-link:active {
+    color: $headerLinkActive;
+}
+
+.nav-link:hover {
+    color: $headerLinkFocus;
+}
+
+.nav-link:focus {
+    color: $headerLinkFocus;
+}
+
+.nav-item {
+    color: $redactor;
+}
+
+.left {
+    background-color: $leftBackgroundColor;
+    color: $leftColor;
+    font-family: Consolas;
+    border: solid 1px $defaultBorderAndFormBackground;
+}
+
+.body {
+    border-color: $defaultBorderAndFormBackground;
+    background-color: $defaultBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:disabled {
+    background-color: $disabledBackground;
+    color: $disabledColor;
+}
+
+.input-group-text {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:valid {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:active {
+    background-color: $disabledBackground;
+    color: $disabledColor;
+}
+
+input {
+    -webkit-tap-highlight-color: $highLight;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    background-color: $defaultBorderAndFormBackground, !important;
+    color: $defaultBodyFont !important;
+    -webkit-text-fill-color: $defaultBodyFont !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: $defaultBorderAndFormBackground !important;
+    color: $defaultBodyFont !important;
+    -webkit-text-fill-color: $defaultBodyFont !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+.form-control:hover {
+    background-color: $disabledBackground;
+}
+
+.form-control:focus {
+    background-color: $disabledBackground;
+    color: $defaultBodyFont;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px $redBorder;
+}
+
+.navbar-toggler-icon {
+    color: $defaultBorderAndFormBackground;
+}
+
+.icon {
+    color: $defaultBodyFont;
+}
+
+.header {
+    color: $headerLinkFocus;
+}
+
+.info {
+    border-color: $danger;
+    color: $defaultBodyFont;
+}
+
+.success {
+    color: $success;
+}
+
+.error {
+    color: $error;
+}
+
+.information {
+    color: $information;
+    font-size: 13px;
+}
+
+.my {
+    color: $my;
+}
+
+.moderator {
+    color: $moderator;
+}
+
+.redactor {
+    color: $redactor;
+}
+
+.administrator {
+    color: $admin;
+}
+
+datepicker-input {
+    color: $defaultBodyFont;
+    background-color: $defaultBackground;
+    -webkit-tap-highlight-color: $highLight;
+}
+
+.datepicker-toggle-button {
+    -webkit-tap-highlight-color: $highLight;
+}
+
+.ui-datepicker-month {
+    background-color: $headerLinkFocus;
+    color: $highLight;
+    border: $redBorder;
+}
+
+.ui-datepicker-year {
+    background-color: $headerLinkFocus;
+    color: $highLight;
+    border: $redBorder;
+}
+
+.table {
+    color: $defaultBodyFont;
+    background-color: $disabledBackground;
+}
+
+.side-menu {
+    background-color: $leftBackgroundColor;
+}
+
+.chat-admin {
+    background-color: $chatAdminBackground;
+    border-radius: 5px;
+    border: 0px;
+}
+
+.modal {
+    background-color: $modalBackground;
+}
+
+.modal-body > header {
+    color: $defaultBodyFont;
+}
+
+.modal-body {
+    background-color: $disabledBackground;
+}

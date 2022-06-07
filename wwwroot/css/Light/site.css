@@ -1,0 +1,273 @@
+:root {
+    --jd-color-background-default: $defaultBackground;
+    --jd-color-border: $headerLinkFocus;
+    --jd-color-panel: $defaultBackground;
+    --jd-color-icon: $error;
+}
+
+a {
+    color: #44371c;
+}
+
+    a:hover {
+        color: firebrick;
+    }
+
+.btn-primary {
+    color: #e2e2e2;
+    background-color: #005a00;
+    border-color: #e2e2e2;
+}
+
+.redborder {
+    border: firebrick 1px solid;
+}
+
+.redborder-right {
+    border-right: firebrick 1px solid;
+}
+
+.redborder-left {
+    border-left: firebrick 1px solid;
+}
+
+.redborder-top {
+    border-left: firebrick 1px solid;
+}
+
+.redborder-bottom {
+    border-left: firebrick 1px solid;
+}
+
+.btn-primary:hover {
+    color: #e2e2e2;
+    border-color: #e2e2e2;
+    background-color: #44371c;
+}
+
+.btn-default {
+    color: #44371c;
+}
+
+    .btn-default:hover {
+        color: firebrick;
+    }
+
+.btn-danger {
+    color: #e2e2e2;
+    background-color: #ff9900;
+}
+
+    .btn-danger:hover {
+        background-color: #44371c;
+    }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #44371c;
+    background-color: #977e51;
+    border-color: #977e51;
+    color: firebrick;
+}
+
+.border-top {
+    border-top: 1px solid #333333;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #333333;
+}
+
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(150, 150, 150, 0.5);
+}
+
+body {
+    background-color: #977e51;
+    color: #e2e2e2;
+}
+
+.navbar {
+    background-color: #c0b4a2;
+}
+
+.nav-link:active {
+    color: #ff0808;
+}
+
+.nav-link:hover {
+    color: firebrick;
+}
+
+.nav-link:focus {
+    color: firebrick;
+}
+
+.nav-item {
+    color: #1861ac;
+}
+
+.left {
+    background-color: #44371c;
+    color: lightgray;
+    font-family: Consolas;
+    border: solid 1px #6e3c0d;
+}
+
+.body {
+    border-color: #6e3c0d;
+    background-color: #e0d4c2;
+    color: #090909;
+}
+
+.form-control {
+    background-color: #6e3c0d;
+    color: #e2e2e2;
+}
+
+    .form-control:disabled {
+        background-color: #44371c;
+        color: gray;
+    }
+
+.input-group-text {
+    background-color: #6e3c0d;
+    color: #e2e2e2;
+}
+
+.form-control:valid {
+    background-color: #6e3c0d;
+    color: #e2e2e2;
+}
+
+.form-control:active {
+    background-color: #44371c;
+    color: gray;
+}
+
+input {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        background-color: #6e3c0d, !important;
+        color: #e2e2e2 !important;
+        -webkit-text-fill-color: #e2e2e2 !important;
+        transition: background-color 1s ease-in-out 5000s !important;
+    }
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: #6e3c0d !important;
+    color: #e2e2e2 !important;
+    -webkit-text-fill-color: #e2e2e2 !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+.form-control:hover {
+    background-color: #44371c;
+}
+
+.form-control:focus {
+    background-color: #44371c;
+    color: #e2e2e2;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px firebrick;
+}
+
+.navbar-toggler-icon {
+    color: #6e3c0d;
+}
+
+.icon {
+    color: #e2e2e2;
+}
+
+.header {
+    color: firebrick;
+}
+
+.info {
+    border-color: #ff9900;
+    color: #333333;
+}
+
+.success {
+    color: #005a00;
+}
+
+.error {
+    color: #aa0000;
+}
+
+.information {
+    color: #333333;
+    font-size: 13px;
+}
+
+.my {
+    color: green;
+}
+
+.moderator {
+    color: #725b30;
+}
+
+.redactor {
+    color: #1861ac;
+}
+
+.administrator {
+    color: red;
+}
+
+datepicker-input {
+    color: #e2e2e2;
+    background-color: #977e51;
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.datepicker-toggle-button {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.ui-datepicker-month {
+    background-color: firebrick;
+    color: #cccccc;
+    border: firebrick;
+}
+
+.ui-datepicker-year {
+    background-color: firebrick;
+    color: #cccccc;
+    border: firebrick;
+}
+
+.table {
+    color: #e2e2e2;
+    background-color: #44371c;
+}
+
+.chat-admin {
+    background-color: rgba(200, 60, 60, 0.2);
+    border-radius: 5px;
+    border: 0px;
+}
+
+.modal {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-body {
+    background-color: #44371c;
+    color: #e2e2e2;
+}
+
+/*# sourceMappingURL=site-light.css.map */

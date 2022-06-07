@@ -1,0 +1,389 @@
+﻿@page
+@model Stories.Pages.My.Friends.IndexModel
+@{
+}
+<h1>Your friends: </h1>
+
+<div class="friendsTable" style="display: none;">
+
+</div>
+<hr />
+
+<h3>Requests you received: </h3>
+
+<div class="yourRequests" style="display: none;">
+
+</div>
+<hr />
+
+<h3>Request you sent: </h3>
+<div id="sentRequests" style="display: none;">
+
+</div>
+<hr />
+
+<h3>Requests you declined: </h3>
+<div id="declinedTable" style="display: none;">
+
+</div>
+<hr />
+
+
+<script src="/lib/tabulator/js/tabulator.js"></script>
+<script>
+/*
+ JsonResult 
+ IsError 
+ ErrorMessage 
+ ErrorId 
+*/
+connection.on("FriendsListReceived", (newResult, filter) => {
+    console.log(newResult);
+    console.log("Applied Filter" + filter);
+    var resulting = JSON.parse(newResult);
+    console.log(resulting.length);
+    if (filter == 0){ // showing all records
+        if (resulting.IsError == true) {
+
+        } else {
+
+        }
+    }
+    if (filter == 4){ // showing Waiting for Approval
+        if (resulting.IsError == true) {
+            var tmpHtml = "";
+            tmpHtml +="<div align='center'><b>"+resulting.ErrorMessage+"</b></div>";
+            console.log("no approval waiting");
+            $(".yourRequests").html(tmpHtml);
+            $(".yourRequests").show(300);
+        } else {
+            var yourRequests = new Tabulator(".yourRequests", {
+            layout: "fitColumns",
+                responsiveLayout: "hide",
+                index: "FriendId",
+                tooltips: true,
+                data: JSON.parse(resulting.JsonResult),
+                addRowPos: "top",
+                pagination: "local",
+                paginationSize: 5,
+                paginationSizeSelector: [5, 10, 15, 20, 30],
+                autoColumns: false, 
+                initialSort: [
+                    { column: "FriendName", dir: "asc" },
+                ],
+                columns: [
+                    {
+                        title: "FriendId",
+                        field: "FriendId",
+                    },
+                    {
+                        title: "",
+                        field: "ShowPicture",
+                        headerSort: false,
+                        width: 35,
+                        formatter: function(cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            if (cell.getValue) {
+                            return '<img src="/Images/'+rowIndex+'/ProfilePhoto_32.png" onerror="this.onerror=null; this.src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                            } else {
+
+                                return '<img src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                            }
+                        }
+                    },
+                    {
+                        title: "Friend Name",
+                        field: "FriendName",
+                        widthGrow: 5,
+                        formatter: function (cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            return '<a href="/Authors?id=' + rowIndex + '"><b>' + cell.getValue() + '</b></a>';
+                        }
+                    },
+                    {
+                        title: "",
+                        width: 60,
+                        headerSort: false,
+                        formatter: function (cell, formatterParams, onRendered) {
+                           return '<div style="text-align:center; margin-left: auto; margin-right: auto;"><a href="#"><b><i style="color: green;" class="fas fa-check"></i></b></a></div>';
+                        },
+                        cellClick: function (e, cell) {
+                           var row = cell.getRow();
+                           var frontId = row.getCell("FriendId").getValue();
+                           console.log("ConfirmingFriendship");
+                           ConfirmFriendship(frontId,'@Model.ActualUser.Id');
+                        },
+
+                    },
+                    {
+                    title: "",
+                    width: 60,
+                    headerSort: false,
+                    formatter: function (cell, formatterParams, onRendered) {
+                       return '<div style="text-align:center; margin-left: auto; margin-right: auto;"><a href="#"><b><i style="color: red;" class="fas fa-times"></i></b></a></div>';
+                    },
+                    cellClick: function (e, cell) {
+                       var row = cell.getRow();
+                       var frontId = row.getCell("FriendId").getValue();
+                       DeclineFriendship(frontId,'@Model.ActualUser.Id');
+                    },
+
+            }
+
+                   
+
+
+                ],
+
+            });
+            $(".yourRequests").show(300);
+            yourRequests.hideColumn("FriendId");
+            yourRequests.redraw();
+        }
+        
+    }
+    if (filter == 2){ // showing Declined Friends 
+        if (resulting.IsError == true) {
+            var tmpHtml = "";
+             console.log("No Friends in list");
+            tmpHtml +="<div align='center'><b>"+resulting.ErrorMessage+"</b></div>";
+            $("#declinedTable").html(tmpHtml);
+            $("#declinedTable").show(300);
+        } else {
+            var declinedTable = new Tabulator("#declinedTable", {
+            layout: "fitColumns",
+                responsiveLayout: "hide",
+                index: "FriendId",
+                tooltips: true,
+                data: JSON.parse(resulting.JsonResult),
+                addRowPos: "top",
+                pagination: "local",
+                paginationSize: 5,
+                paginationSizeSelector: [5, 10, 15, 20, 30],
+                autoColumns: false, 
+                initialSort: [
+                    { column: "FriendName", dir: "asc" },
+                ],
+                columns: [
+                    {
+                        title: "FriendId",
+                        field: "FriendId",
+                    },
+                    {
+                        title: "",
+                        field: "ShowPicture",
+                        headerSort: false,
+                        width: 35,
+                        formatter: function(cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            if (cell.getValue) {
+                            return '<img src="/Images/'+rowIndex+'/ProfilePhoto_32.png" onerror="this.onerror=null; this.src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                            } else {
+
+                                return '<img src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                            }
+                        }
+                    },
+                    {
+                        title: "Friend Name",
+                        field: "FriendName",
+                        widthGrow: 5,
+                        formatter: function (cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            return '<a href="/Authors?id=' + rowIndex + '"><b>' + cell.getValue() + '</b></a>';
+                        }
+                    },
+                    {
+                        title: "",
+                        width: 60,
+                        headerSort: false,
+                        formatter: function (cell, formatterParams, onRendered) {
+                           return '<div style="text-align:center; margin-left: auto; margin-right: auto;" title="Remove request\n - user will be able to send another one"><a href="#"><b><i style="color: green;" class="fas fa-check"></i></b></a></div>';
+                        },
+                        cellClick: function (e, cell) {
+                           var row = cell.getRow();
+                           var frontId = row.getCell("FriendId").getValue();
+                           console.log("Remove decline");
+                           RemoveRequest(frontId,'@Model.ActualUser.Id');
+                        },
+
+                    },
+                    
+                         
+
+
+                ],
+
+            });
+            $("#declinedTable").show(300);
+            declinedTable.hideColumn("FriendId");
+            declinedTable.redraw();
+        }
+    }
+    if (filter == 3){ // showing Approved Friends
+        if (resulting.IsError == true) {
+             var tmpHtml = "";
+             console.log("No Friends in list");
+            tmpHtml +="<div align='center'><b>"+resulting.ErrorMessage+"</b></div>";
+            $(".friendsTable").html(tmpHtml);
+            $(".friendsTable").show(300);
+        } else {
+            var friendsTable = new Tabulator(".friendsTable", {
+                layout: "fitColumns",
+                responsiveLayout: "hide",
+                index: "FriendId",
+                tooltips: true,
+                data: JSON.parse(resulting.JsonResult),
+                addRowPos: "top",
+                pagination: "local",
+                paginationSize: 5,
+                paginationSizeSelector: [5, 10, 15, 20, 30],
+                autoColumns: false, 
+                initialSort: [
+                    { column: "FriendName", dir: "asc" },
+                ],
+                columns: [
+                    {
+                        title: "FriendId",
+                        field: "FriendId",
+                    },
+                    {
+                        title: "",
+                        field: "ShowPicture",
+                        headerSort: false,
+                        width: 35,
+                        formatter: function(cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            if (cell.getValue) {
+                            return '<img src="/Images/'+rowIndex+'/ProfilePhoto_32.png" onerror="this.onerror=null; this.src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                            } else {
+                                return '<img src=\'/Images/anonymous_32.png\'" style=\'margin: 7px;\'>';
+                            }
+                        }
+                    },
+                    {
+                        title: "Friend Name",
+                        field: "FriendName",
+                        widthGrow: 5,
+                        formatter: function (cell, formatterParams, onRendered) {
+                            var row = cell.getRow();
+                            var rowIndex = row.getIndex();
+                            return '<a href="/Authors?id=' + rowIndex + '"><b>' + cell.getValue() + '</b></a>';
+                        }
+                    },
+                    {
+                        title: "Unfriend",
+                        headerSort: false,
+                        formatter: function (cell, formatterParams, onRendered) {
+                           return '<div style="text-align:center; margin-left: auto; margin-right: auto;"><a href="#"><b><i class="fas fa-users-slash"></i></b></a></div>';
+                        },
+                        cellClick: function (e, cell) {
+                           var row = cell.getRow();
+                           var frontId = row.getCell("FriendId").getValue();
+                           var friendName = row.getCell("FriendName").getValue();
+                           unfriend(frontId, friendName);
+                        },
+
+                    }
+
+                   
+
+
+                ],
+
+            });
+            $(".friendsTable").show(300);
+            friendsTable.hideColumn("FriendId");
+            friendsTable.redraw();
+        }
+    }
+    if (filter == 1){ // showing received Friends Requests
+        if (resulting.IsError == true) {
+             var tmpHtml = "";
+             console.log("No friend requests received");
+            tmpHtml +="<div align='center'><b>"+resulting.ErrorMessage+"</b></div>";
+            $("#sentRequests").html(tmpHtml);
+            $("#sentRequests").show(300);
+        } else {
+           var sentRequests = new Tabulator("#sentRequests",
+              {
+                 layout: "fitColumns",
+                 responsiveLayout: "hide",
+                 index: "FriendId",
+                 tooltips: true,
+                 data: JSON.parse(resulting.JsonResult),
+                 addRowPos: "top",
+                 pagination: "local",
+                 paginationSize: 5,
+                 paginationSizeSelector: [5, 10, 15, 20, 30],
+                 autoColumns: false,
+                 initialSort: [
+                    { column: "FriendName", dir: "asc" },
+                 ],
+                 columns: [
+                    {
+                       title: "FriendId",
+                       field: "FriendId",
+                    },
+                    {
+                       title: "",
+                       field: "ShowPicture",
+                       headerSort: false,
+                       width: 35,
+                       formatter: function(cell, formatterParams, onRendered) {
+                          var row = cell.getRow();
+                          var rowIndex = row.getIndex();
+                          if (cell.getValue) {
+                             return '<img src="/Images/' + rowIndex + '/ProfilePhoto_32.png" onerror="this.onerror=null; this.src=\'/Images/anonymous_32.png\' style=\'margin: 7px;\'">';
+                          } else {
+                             return '<img src=\'/Images/anonymous_32.png\'" style=\'margin: 7px;\'>';
+                          }
+                       }
+                    },
+                    {
+                       title: "Friend Name",
+                       field: "FriendName",
+                       widthGrow: 5,
+                       formatter: function(cell, formatterParams, onRendered) {
+                          var row = cell.getRow();
+                          var rowIndex = row.getIndex();
+                          return '<a href="/Authors?id=' + rowIndex + '"><b>' + cell.getValue() + '</b></a>';
+                       }
+                    },
+                    {
+                       title: "",
+                       headerSort: false,
+                       width: 60,
+                       formatter: function(cell, formatterParams, onRendered) {
+                          return '<div style="text-align:center; margin-left: auto; margin-right: auto;"><a href="#"><b><i style="color: red;" class="fas fa-times"></i></b></a></div>';
+                       },
+                       cellClick: function(e, cell) {
+                          var row = cell.getRow();
+                          var frontId = row.getCell("FriendId").getValue();
+                          CancelRequest('@Model.ActualUser.Id', frontId);
+                       }
+                    }
+                 ]
+
+           });
+           $(".sentRequests").show(300);
+           sentRequests.hideColumn("FriendId");
+           sentRequests.redraw();
+        }
+    }
+
+});
+
+
+/*
+ShowPicture { get; set; } = false;
+FriendId { get; set; }
+FriendName { get; set; }
+FriendshipStatus { get; set; }  // 0 = not confirmed 1 = confirmed 2 = declined 
+*/
+</script>

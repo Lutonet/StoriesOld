@@ -1,0 +1,449 @@
+﻿@page
+@model Stories.Pages.Profile.IndexModel
+@{
+}
+@if (Model.userRecognized == false)
+{
+   <h3> Profile wasn't found</h3>
+}
+@if (Model.userRecognized == true)
+{
+   <h3 class="welcome"> @Model.UserProfile.DisplayedName</h3>
+   <div class="row">
+    <div class="col" style="margin: 7px; width: 195px; min-width: 195px; max-width: 195px;">
+        @if (Model.UserProfile.ShowPicture)
+        {
+            <img id="currentPhoto" src="@Model.UserProfile.PictureUrl" onerror="this.onerror=null; this.src='/Images/anonymous_180.png'">
+        }
+        @if (!Model.UserProfile.ShowPicture)
+        {
+            <img src="/Images/anonymous_180.png">
+        }
+    </div>
+    <div class="col">
+        <table style="width:90%; margin-left: auto; margin-right: auto; margin-top: 15px; padding: 5px;">
+            <tr>
+                <td style="width: 200px">
+                    <b>Email:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowEmail)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowEmail)
+                    {
+                       <a href="mailto://@Model.UserProfile.Email" @Model.UserProfile.Email>@Model.UserProfile.Email</a>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 200px">
+                    <b>Full Name:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowName)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowName)
+                    {
+                       @Model.UserProfile.FirstName<b> </b>@Model.UserProfile.LastName
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 200px">
+                    <b>Registration Date:</b>
+                </td>
+                <td>
+                     @Model.UserProfile.RegistrationTime.Day/@Model.UserProfile.RegistrationTime.Month/@Model.UserProfile.RegistrationTime.Year                    
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 200px">
+                    <b>BirthDate:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowBirthDate)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowBirthDate)
+                    {
+                        <span>
+                        @Model.UserProfile.BirthDate.Day/@Model.UserProfile.BirthDate.Month/@Model.UserProfile.BirthDate.Year
+                        </span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 200px">
+                    <b>Age:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowBirthDate)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowBirthDate)
+                    {
+                       <span>
+                       @Model.UserProfile.Age years
+                       </span>
+
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 200px">
+                    <b>Country:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowCountry)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowBirthDate)
+                    {
+                       <span>
+                       @Model.UserProfile.CountryName
+                       </span>
+                    }
+
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 200px">
+                    <b>Gender:</b>
+                </td>
+                <td>
+                        @if(Model.UserProfile.Gender == Settings.Gender.Male)
+                        {
+                            <span style="color: rgba(0,0,128,1)"> <i class="fas fa-mars"></i></span>
+                        }
+                        @if(Model.UserProfile.Gender == Settings.Gender.Female)
+                        {
+                            <span style="color: rgba(128,0,0,1)"><i class="fas fa-venus"></i> </span>
+                        }
+                        @if(Model.UserProfile.Gender == Settings.Gender.Other)
+                        {
+                            <span style="color: rgba(0,128,0,1)"> <i class="fas fa-transgender"></i></span>
+                        }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 200px">
+                    <b>Phone:</b>
+                </td>
+                <td>
+                    @if (!Model.UserProfile.ShowPhone)
+                    {
+                        <i> Private </i> 
+                    }
+                    @if (Model.UserProfile.ShowPhone)
+                    {
+                       <span>
+                       @Model.UserProfile.PhoneNumber
+                       </span>
+                    }
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    </div>
+        
+    <div class="row">
+        <hr style="width: 100%">
+    </div>
+    <div class="row">
+     
+        <span style="margin-left: auto; margin-right: auto; font-size: 18px;">
+    @if(Model.UserProfile.ShowSocialMedia)
+    {
+        @if (Model.UserProfile.Facebook != null)
+            {
+                <a href="@Model.UserProfile.Facebook" style="margin-right: 25px;"><i class="fab fa-facebook-square"></i></a>
+            }
+            @if (Model.UserProfile.Twitter != null)
+            {
+                <a href="@Model.UserProfile.Twitter" style="margin-right: 25px;"><i class="fab fa-twitter-square"></i></a>
+            }
+            @if (Model.UserProfile.Microsoft != null)
+            {
+                <a href="@Model.UserProfile.Microsoft" style="margin-right: 25px;"><i class="fab fa-windows"></i></a>
+            }
+            @if (Model.UserProfile.Google != null)
+            {
+                <a href="@Model.UserProfile.Google" style="margin-right: 25px;"><i class="fab fa-google"></i></a>
+            }
+        }
+            @if (Model.UserProfile.ShowLastSeen)
+            {
+                <a href="#" style="margin-right: 25px;"><i class="fas fa-eye"> &nbsp;</i> @Model.UserProfile.LastSeen.Day/@Model.UserProfile.LastSeen.Month/@Model.UserProfile.LastSeen.Year
+                <b> </b>@Model.UserProfile.LastSeen.Hour:@Model.UserProfile.LastSeen.Minute:@Math.Ceiling((double)Model.UserProfile.LastSeen.Second)</a>
+            }
+            <a href="#" style="margin-right: 25px;"><i class="fas fa-book-open"> &nbsp;</i>(@Model.UserProfile.Articles)</a>
+            <a href="#"><i class="fas fa-comments"> &nbsp;</i>(@Model.UserProfile.Critics)</a>
+            <span id="SendFriendRequest" style="display:none;"><a href="#" onclick="AddFriend('@Model.RequestedProfile.Id')"><i title="Add Friend" class="fas fa-user-friends" style="margin-left: 15px; color: red;"></i></a></span>
+            <span id="IsFriend" style="display:none;"><a href="#" onclick="RemoveFriend('@Model.RequestedProfile.Id')"><i class="fas fa-user-friends" style=" margin-left: 15px; color: green;"></i></a></span>
+            <span id="WaitingApproval" style="display:none;  margin-left: 15px;"><a href="#"><i class="fas fa-user-friends" style=" margin-left: 15px; color: orange;"></i></a></span>
+            @if(Model.AreFriends)
+            {
+                <script>
+                $("#IsFriend").show(300);
+                $("#SendFriendRequest").hide();
+                $("#WaitingApproval").hide();
+                                 function RemoveFriend(id)
+                {
+                    window.alert("Removing " +id);
+                }
+                                 </script>
+            }
+            @if(Model.DisplayWaitingApproval)
+            {
+                <script>
+                $("#WaitingApproval").show(300);
+                $("#SendFriendRequest").hide();
+                $("#IsFriend").hide();
+                </script>
+            }
+            @if(Model.DisplayAddToFriendsButton)
+            {
+            <script>
+                $("#SendFriendRequest").show(300);
+                $("#IsFriend").hide();
+                $("#WaitingApproval").hide();
+                      
+                function AddFriend(id)
+                {
+                    if (confirm("Add @Model.RequestedProfile.DisplayedName as friend?"))
+                    {
+                        connect.invoke("SendFriendRequest", id);
+                    }
+                }
+                    
+             </script>
+            }
+
+     </span>
+    </div>
+    <div class="row">
+        <hr style="width: 100%">
+    </div>
+    <div class="row">
+        <div width="90%" style="margin-right: auto; margin-left: auto;">
+            <h3>Personal note:</h3>
+            @Html.Raw(Model.UserProfile.Info)
+        </div>
+    </div>
+    <div class="row">
+        <hr style="width: 100%">
+    </div>
+        <script src="/lib/tabulator/js/tabulator.js">
+        </script>
+
+    @if(Model.UserProfile.JsonFriendsList != "")
+    {
+        <h3>@Model.UserProfile.DisplayedName's friends</h3>
+        <div id="friendsTable">
+            
+        </div>
+    }
+    @if(Model.UserArticlesJson != "")
+    {
+        <hr />
+        <h3>@Model.UserProfile.DisplayedName's articles</h3> 
+        <div class="myArticlesTable">
+
+        </div>
+    
+    }
+    
+}
+
+
+<script>
+
+    var articleTable = new Tabulator(".myArticlesTable", {
+    index: "ArticleId",
+    layout: "fitColumns",
+    responsiveLayout: "hide",
+    tooltips: true,
+    data: JSON.parse('@Html.Raw(Model.UserArticlesJson)'),
+    addRowPos: "top",
+    pagination: "local",
+    paginationSize: 5,
+    paginationSizeSelector: [5, 10, 15, 20, 30],
+    autoColumns: false,
+    initialSort: [
+        { column: "Published", dir: "desc" },
+    ],
+    columns: [
+        {
+            title: "Title",
+            field: "ArticleTitle",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+        },
+        { title: "Style", field: "CategoryGroupName", width: 140 },
+        { title: "Category", field: "CategoryName", width: 140 },
+        {
+               title: "Published",
+               field: "Published",
+               width: 140,
+               formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var offset = new Date().getTimezoneOffset();
+                  d.setMinutes(d.getMinutes() - offset);
+                  var formated = ("0" + d.getDate()).slice(-2) + "/"
+                     + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                     + d.getFullYear() + " "
+                     + ("0" + d.getHours()).slice(-2)
+                     + ":" + ("0" + d.getMinutes()).slice(-2)
+                     + ":" + ("0" + d.getSeconds()).slice(-2);
+
+                  return formated;
+               }
+            },
+        {
+
+            title: "Likes", field: "LikesCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+             return "<i class='fa fa-thumbs-up'></i>";
+            }
+
+        },
+        { title: "Stars", field:"rating",  formatter:"star", hozAlign:"center", width: 100 },
+        {
+            title: "Critics", field: "CriticsCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+                return "<i class='fas fa-comment-dots'></i>";
+            }
+        },
+        
+    ]
+    
+});
+   
+
+var friendsTable = new Tabulator("#friendsTable", {
+    
+
+         layout: "fitColumns",
+         responsiveLayout: "hide",
+         index: "AuthorId",
+         tooltips: true,
+         data:  JSON.parse('@Html.Raw(Model.UserProfile.JsonFriendsList)'),
+         addRowPos: "top",
+         pagination: "local",
+         paginationSize: 5,
+         paginationSizeSelector: [5, 10, 15, 20, 30],
+         autoColumns: false,
+         initialSort: [
+            { column: "AuthorName", dir: "asc" },
+         ],
+         columns: [
+            {
+               title: "Author",
+               field: "AuthorName",
+               widthGrow: 5,
+               cellClick: function(e, cell) {
+                  var row = cell.getRow();
+                  var rowIndex = row.getIndex();
+                  LoadAuthor(rowIndex);
+               },
+               formatter: function(cell, formatterParams, onRendered) {
+                  return '<a href="#"<b>' + cell.getValue() + '</b></a>';
+               },
+            },
+            {
+               title: "Registered",
+               field: "Registered",
+               width: 100,
+               formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var offset = new Date().getTimezoneOffset();
+                  d.setMinutes(d.getMinutes() - offset);
+                  var formated = ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
+                    
+
+                  return formated;
+               }
+            },
+            {
+               title: "Articles",
+               field: "ArticlesCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='fas fa-book-open'></i>";
+               }
+            },
+            {
+               title: "Likes",
+               field: "LikesCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='far fa-thumbs-up'></i>";
+               }
+            },
+            {
+               title: "Critics",
+               field: "CriticsCount",
+               width: 50,
+               titleFormatter: function (title, titleFormatterParams, onRendered) {
+                  return "<i class='far fa-comments'></i>";
+               }
+            },
+            {
+               title: "Online Time",
+               field: "OnlineTime",
+               width: 110, 
+               formatter: function(cell, formatterParams, onRendered) {
+                  var d = cell.getValue();
+                  d = d.substr(0, d.length - 8);
+                  return d;
+               }
+            },
+            {
+               title: "Last seen",
+               field: "LastSeen",
+               width: 140,
+               formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var offset = new Date().getTimezoneOffset();
+                  d.setMinutes(d.getMinutes() - offset);
+                  var formated = ("0" + d.getDate()).slice(-2) + "/"
+                     + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                     + d.getFullYear() + " "
+                     + ("0" + d.getHours()).slice(-2)
+                     + ":" + ("0" + d.getMinutes()).slice(-2)
+                     + ":" + ("0" + d.getSeconds()).slice(-2);
+
+                  return formated;
+               }
+            },
+            { title: "AuthorId", field: "AuthorId" },
+
+
+         ],
+
+      });
+
+     
+                    friendsTable.hideColumn("AuthorId");
+                    friendsTable.redraw();
+     
+
+    </script>

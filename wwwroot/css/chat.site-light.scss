@@ -1,0 +1,266 @@
+﻿$bubbleBackground: #f57b08a2;
+$defaultBackground: #977e51;
+$defaultBodyFont: #e2e2e2;
+$defaultBodyClassBackground: #e0d4c2;
+$defaultBodyClassFont: #090909;
+$defaultNavlink: #44371c;
+$defaultNavbar: #c0b4a2;
+$leftBackgroundColor: #44371c;
+$leftColor: lightgray;
+$headerLinkFocus: firebrick;
+$headerLinkActive: #ff0808;
+$defaultBorderAndFormBackground: #6e3c0d;
+$redBorder: firebrick;
+$disabledBackground: #44371c;
+$disabledColor: gray;
+$formControlValid: #e2e2e2;
+$highLight: #cccccc;
+$hr: firebrick;
+$success: rgb(0, 90, 0);
+$error: #aa0000;
+$information: #cccccc;
+$moderator: rgb(114, 91, 48);
+$redactor: #1861ac;
+$my: green;
+$admin: red;
+$danger: #ff9900;
+$borderLight: #333333;
+$shadow: rgba(150,150,150, 0.5);
+$modalBackground: rgba(0.2, 0.2, 0.2, 0.8);
+
+a {
+    color: $defaultNavlink;
+}
+
+a:hover {
+    color: $danger;
+}
+
+.btn-primary {
+    color: $defaultBodyFont;
+    background-color: $success;
+    border-color: $defaultBodyFont;
+}
+
+.btn-primary:hover {
+    color: $defaultBodyFont;
+    border-color: $defaultBodyFont;
+    background-color: $disabledBackground;
+}
+
+.btn-default {
+    color: $defaultNavlink;
+}
+
+.btn-default:hover {
+    color: $headerLinkFocus;
+}
+
+.btn-danger {
+    color: $formControlValid;
+    background-color: $danger;
+}
+
+.btn-danger:hover {
+    background-color: $disabledBackground;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: $defaultNavlink;
+    background-color: $defaultBackground;
+    border-color: $defaultBackground;
+    color: $headerLinkFocus;
+}
+
+.border-top {
+    border-top: 1px solid $borderLight;
+}
+
+.border-bottom {
+    border-bottom: 1px solid $borderLight;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem $shadow;
+}
+
+body {
+    background-color: $defaultBackground;
+    color: $defaultBodyFont;
+}
+
+.navbar {
+    background-color: $defaultNavbar;
+}
+
+.nav-link:active {
+    color: $headerLinkActive;
+}
+
+.nav-link:hover {
+    color: $headerLinkFocus;
+}
+
+.nav-link:focus {
+    color: $headerLinkFocus;
+}
+
+.nav-item {
+    color: $redactor;
+}
+
+input {
+    -webkit-tap-highlight-color: $highLight;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    background-color: $defaultBorderAndFormBackground, !important;
+    color: $defaultBodyFont !important;
+    -webkit-text-fill-color: $defaultBodyFont !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: $defaultBorderAndFormBackground !important;
+    color: $defaultBodyFont !important;
+    -webkit-text-fill-color: $defaultBodyFont !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px $redBorder;
+}
+
+.navbar-toggler-icon {
+    color: $defaultBorderAndFormBackground;
+}
+
+.icon {
+    color: $defaultBodyFont;
+}
+
+.header {
+    color: $headerLinkFocus;
+}
+
+.success {
+    color: $success;
+}
+
+.error {
+    color: $error;
+}
+
+.information {
+    color: $information;
+    font-size: 13px;
+}
+
+.my {
+    color: $my;
+}
+
+.moderator {
+    color: $moderator;
+}
+
+.redactor {
+    color: $redactor;
+}
+
+.administrator {
+    color: $admin;
+}
+
+.side-menu {
+    background-color: $defaultNavbar;
+}
+
+.room-button {
+    border-color: $highLight;
+    color: $defaultBodyFont;
+    background: $defaultBorderAndFormBackground;
+}
+
+.room-button:hover {
+    background-color: $headerLinkActive;
+}
+
+.chat-body {
+    background-image: url("/img/chat-background-light.jpg");
+    background-attachment: fixed;
+}
+
+.chat-input {
+    background-color: $defaultNavbar;
+    color: $defaultBodyFont;
+}
+
+.bubble {
+    background-color: $bubbleBackground;
+    border-color: $bubbleBackground;
+    color: $defaultBodyFont;
+}
+
+.bubble-bottom-left:before {
+    border-left: $bubbleBackground;
+    border-top: $bubbleBackground;
+}
+
+.bubble-bottom-right:before {
+    border-left: $bubbleBackground;
+    border-top: $bubbleBackground;
+}
+
+.form-control {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:disabled {
+    background-color: $disabledBackground;
+    color: $disabledColor;
+}
+
+.input-group-text {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:valid {
+    background-color: $defaultBorderAndFormBackground;
+    color: $defaultBodyFont;
+}
+
+.form-control:active {
+    background-color: $disabledBackground;
+    color: $disabledColor;
+}
+
+input {
+    -webkit-tap-highlight-color: $highLight;
+}
+
+.modal {
+    background-color: $modalBackground;
+}
+
+.modal-body > header {
+    color: $defaultBodyFont;
+}
+
+.modal-body {
+    background-color: $disabledBackground;
+}
+
+.tooltip .tooltiptext {
+    background-color: $disabledBackground;
+    color: $defaultBodyClassFont;
+}

@@ -1,0 +1,43 @@
+﻿@page
+@model Stories.Areas.Identity.Pages.Account.Manage.InfoModel
+@{
+}
+@{
+   ViewData["Title"] = "Author Info";
+   ViewData["ActivePage"] = ManageNavPages.Info;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<hr />
+<form id="info_form" method="post" onsubmit="fillValues()">
+   <div class="row">
+      <div class="offset-1 col-md-10">
+         <label asp-for="Input.InfoData" class="form-data"></label>
+         <textarea style="height: 300px" id="InfoData"></textarea>
+         <input type="hidden" id="Input_InfoData" asp-for="Input.InfoData" />
+      </div>
+   </div>
+   <hr />
+   <div class="row">
+      <div class="offset-8 col-md-4 text-right">
+
+         <button class="form-control btn btn-primary"> Update profile: </button>
+      </div>
+   </div>
+</form>
+<script src="/js/jodit.min.js"></script>
+<script>
+noLeft();
+var editor = new Jodit ("#InfoData",{
+                        height: 300,
+                        theme: "dark",
+                        toolbarButtonSize: "small",
+                        "buttons": "source,bold,italic,underline,strikethrough,eraser,superscript,subscript,ul,ol,indent,outdent,left,font,fontsize,paragraph,classSpan"
+                         });
+//window.alert("@Html.Raw(Model.Input.InfoData)");
+editor.setEditorValue("@Html.Raw(Model.Input.InfoData)");
+function fillValue() {
+    $("#Input_InfoData").val(editor.getEditorValue());
+}
+</script>

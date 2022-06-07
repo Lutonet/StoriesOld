@@ -1,0 +1,243 @@
+﻿:root {
+    --jd-color-background-default: #050505;
+    --jd-color-border: #880000;
+    --jd-color-panel: #070707;
+    --jd-color-icon: #880000;
+}
+
+a {
+    color: #FA9929;
+}
+
+    a:hover {
+        color: #660000;
+        text-decoration: none;
+    }
+
+.btn-primary {
+    color: #ddd;
+    background-color: grey;
+    border-color: #ddd;
+}
+
+    .btn-primary:hover {
+        color: white;
+        border-color: #ddd;
+        background-color: #220000;
+    }
+
+.btn-default {
+    color: #fa9929;
+}
+
+    .btn-default:hover {
+        color: firebrick;
+    }
+
+.btn-danger {
+    color: white;
+    background-color: #660000;
+}
+
+    .btn-danger:hover {
+        background-color: #220000;
+    }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fa9929;
+    background-color: black;
+    border-color: black;
+    color: firebrick;
+}
+
+.border-top {
+    border-top: 1px solid #1A1A1A;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #1A1A1A;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(100,100,100, 0.5);
+}
+
+body {
+    background-color: rgba(20,16,12, 1.0);
+    color: #050505;
+}
+
+.navbar {
+    background-color: rgba(56,56,56,0.8);
+}
+
+.nav-link {
+    color: #fa9929;
+}
+
+    .nav-link:active {
+        color: sandybrown;
+    }
+
+    .nav-link:hover {
+        color: #990000;
+    }
+
+    .nav-link:focus {
+        color: #990000;
+    }
+
+.nav-item {
+    color: aqua;
+}
+
+.left {
+    background-color: rgba(5,3,1, 1.0);
+    color: #00AA00;
+    font-family: Consolas;
+    border: solid 1px #222222;
+}
+
+.body {
+    border-color: #222222;
+    background-color: rgba(5,3,1, 1.0);
+    color: #DADACA;
+}
+
+.form-control {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+    .form-control:disabled {
+        background-color: #220000;
+        color: gray;
+    }
+
+.input-group-text {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+.form-control:valid {
+    background-color: #222222;
+    color: #CACACA;
+}
+
+.form-control:active {
+    background-color: #220000;
+    color: #DADADA;
+}
+
+input {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        background-color: #222222 !important;
+        color: #CACACA !important;
+        -webkit-text-fill-color: #CACACA !important;
+        transition: background-color 1s ease-in-out 5000s !important;
+    }
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: #222222 !important;
+    color: #CACACA !important;
+    -webkit-text-fill-color: #CACACA !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+.form-control:hover {
+    background-color: #220000;
+}
+
+.form-control:focus {
+    background-color: #220000;
+    color: #DADADA;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px #440000;
+}
+
+.navbar-toggler-icon {
+    color: #222222;
+}
+
+.icon {
+    color: #CACACA
+}
+
+.header {
+    color: #990000;
+}
+
+.info {
+    border-color: #660000;
+    color: #cacaca;
+}
+
+.success {
+    color: lightgreen;
+}
+
+.error {
+    color: red;
+}
+
+.information {
+    color: blue;
+    font-size: 13px;
+}
+
+.my {
+    color: green;
+}
+
+.moderator {
+    color: dodgerblue;
+}
+
+.redactor {
+    color: darkblue;
+}
+
+.administrator {
+    color: darkred;
+}
+
+datepicker-input {
+    color: white;
+    background-color: black;
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.datepicker-input::-webkit-calendar-picker-indicator {
+}
+
+.datepicker-toggle-button {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.ui-datepicker-month {
+    background-color: #880000;
+    color: #cccccc;
+    border: #440000;
+}
+
+.ui-datepicker-year {
+    background-color: #880000;
+    color: #cccccc;
+    border: #440000;
+}
+
+.table {
+    color: #aaaaaa;
+}

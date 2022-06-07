@@ -1,0 +1,138 @@
+﻿@page
+@model Stories.Pages.Messages.DeletedModel
+@{
+}
+
+<div class="unreadMessages" style="display: none;">
+   <h3> Deleted Messages </h3>
+   <hr />
+   <div id="messageList">
+   </div>
+   <hr />
+</div>
+<div class="row">
+   <div id="messageRead" class="col-10 offset-1" style="display: none;">
+   </div>
+</div>
+
+<style>
+   .tabulator-row {
+      height: 2.1em;
+   }
+</style>
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+
+<script>
+   var actualPage = "deleted";
+
+   var messageTable = new Tabulator("#messageList", {
+      index: "MessageId",
+      rowClick: function (e, row) {
+         //e - the click event object
+         //row - row component
+         objectID = row.getData().MessageId;
+         ReadMessage(objectID);
+      },
+      rowMouseEnter: function (e, row) {
+         document.body.style.cursor = "pointer";
+      },
+      rowMouseLeave: function (e, row) {
+         document.body.style.cursor = "default";
+      },
+      movableRows: true,
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 10,
+      movableColumns: true,
+      resizableRows: true,
+      selectable: false,
+      initialSort: [
+         { column: "Sent", dir: "desc" },
+      ],
+      columns: [
+         {
+            title: "", field: "MessageId", headerSort: false, formatter: function (cell, formatterParams, onRendered) {
+               return "";
+            }
+         },
+         { title: "From:", field: "SenderName", width: 140 },
+         { title: "Subject:", field: "Subject", widthGrow: 5 },
+         {
+            title: "Received At:", field: "Sent", width: 130, formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var formated = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+               return formated;
+            }
+         },
+
+         {
+            title: "Restore", field: "RestoreLink", width: 60, headerSort: false, formatter: function (cell, formatterParams, onRendered) {
+               return cell.getValue();
+            }
+         },
+         {
+            title: "Wipe", field: "DeleteLink", width: 60, headerSort: false, formatter: function (cell, formatterParams, onRendered) {
+               return cell.getValue();
+            }
+         },
+      ],
+      rowFormatter: function (row) {
+         //row - row component
+
+         var data = row.getData();
+
+         if (data.WasRead == false) {
+            row.getElement().style.fontWeight = "bold";
+
+         }
+      },
+   });
+
+   Connect.on("receivedMailboxData", (tableData) => {
+
+      if (tableData != "") {
+         var data = JSON.parse(tableData);
+         messageTable.setData(data)
+            .then(function () {
+               setTimeout(function () {
+                  messageTable.hideColumn("MessageId");
+               }, 200);
+
+               $(".unreadMessages").show(300);
+
+            });
+      }
+   });
+
+   Connect.on("MessageRestored", (id) => {
+      messageTable.deleteRow(id);
+      $("#messageRead").hide(200);
+   });
+
+   Connect.on("MessageWipped", (id) => {
+      messageTable.deleteRow(id);
+      setTimeout(function () {
+         $("#messageRead").hide(300);
+      }, 200)
+      $("#messageRead").hide(300);
+
+   });
+
+   function RestoreMessage(id) {
+
+      Connect.invoke("RestoreMessage", id)
+         .catch(function (err) {
+            console.log(err);
+         })
+   };
+
+   function WipeMessage(id) {
+      Connect.invoke("WipeMessage", id)
+         .catch(function (err) {
+            console.log(err);
+         })
+   }
+</script>

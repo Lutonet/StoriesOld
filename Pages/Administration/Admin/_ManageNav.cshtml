@@ -1,0 +1,14 @@
+﻿@inject SignInManager<User> SignInManager
+@{
+   var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+<ul class="nav nav-pills flex-column bordered-right">
+   <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="index" asp-page="./Index">Dashboard</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.UsersNavClass(ViewContext)" id="users" asp-page="./Users">Email</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.LogsNavClass(ViewContext)" id="logs" asp-page="./Logs">Logs</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.EmailLogsNavClass(ViewContext)" id="email-logs" asp-page="./EmailLogs">Email logs</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.UserLogsNavClass(ViewContext)" id="user-logs" asp-page="./UserLogs">User logs</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.ReportsNavClass(ViewContext)" id="reports" asp-page="./Reports">Reports</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.SystemSettingsNavClass(ViewContext)" id="system-settings" asp-page="./SystemSettings">System settings</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.ScheduledTasksNavClass(ViewContext)" id="scheduled-tasks" asp-page="./ScheduledTasks">Scheduled tasks</a></li>
+</ul>

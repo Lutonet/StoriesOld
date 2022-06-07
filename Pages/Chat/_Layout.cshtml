@@ -1,0 +1,154 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Stories.API
+@inject ICookieService cookieService
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+   public string GetAntiXsrfRequestToken()
+   {
+      return Xsrf.GetAndStoreTokens(Context).RequestToken;
+   }
+}
+@{ 
+    string Theme = "Light";
+    User user = null;
+}
+@using Stories.Services;
+@using Stories.Model;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>@ViewData["Title"] Stories</title>
+   <script src="https://kit.fontawesome.com/5ef6395779.js" crossorigin="anonymous"></script>
+   <link rel="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="~/css/chat.site.css" />
+    @if (User.Identity.IsAuthenticated)
+   {
+              
+       string userName = User.Identity.Name;
+       Theme = await cookieService.GetThemeAsync(userName);
+       <script>console.log("User is logged in - loading Theme from the DB");</script>
+   }
+   
+       @if (!User.Identity.IsAuthenticated)
+   {
+        Theme = await cookieService.GetTheme();
+        <script>console.log("User not logged in, loading theme from the cookie");</script>
+   } 
+   <link rel="stylesheet" href="~/css/@Theme/site.css" />
+   <link rel="stylesheet" href="~/css/@Theme/chat.css" />
+   <script src="~/lib/jquery/dist/jquery.min.js"></script>
+   <script src="~/js/jscolor.min.js"></script>
+   <script src="~/js/signalr/dist/browser/signalr.js"></script>
+   <script src="~/js/chat.js"></script>
+   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="~/js/site.js" asp-append-version="true"></script>
+   @await RenderSectionAsync("Scripts", required: false)
+</head>
+<body style="display: flex; flex-grow: 1; height: 100vh">
+   <header id="mainNavbar" class="collapse">
+      <nav class="navbar navbar-toggleable-sm navbar-expand-sm border-bottom">
+         <div class="container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index">Stories</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+               <span class="navbar-toggler-icon"><i class="fas fa-expand-arrows-alt icon"></i></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+               <ul class="navbar-nav flex-grow-1">
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Articles">Articles</a>
+                  </li>
+                  @if (User.IsInRole("Subscriber"))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/My">My Page</a>
+                     </li>
+                  }
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Authors">Authors</a>
+                  </li>
+                  @if (User.IsInRole("Subscriber"))
+                  {
+
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Clubs">Clubs</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Messages">Messages</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link my" href="/Chat">Chat</a>
+                     </li>
+
+                  }
+                  @if (User.IsInRole(Settings.Moderator))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link moderator" href="/Administration/Moderator">Moderation</a>
+                     </li>
+
+                  }
+                  @if (User.IsInRole(Settings.Redactor))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link redactor" href="/Administration/Redactor">Redaction</a>
+                     </li>
+                  }
+                  @if (User.IsInRole(Settings.Administrator))
+                  {
+                     <li class="nav-item">
+                        <a class="nav-link administrator" href="/Administration/Admin">Administration</a>
+                     </li>
+                  }
+                  <li class="nav-item">
+                     <a class="nav-link" href="/Privacy">Privacy</a>
+                  </li>
+               </ul>
+               <partial name="_LoginPartial" />
+            </div>
+         </div>
+      </nav>
+   </header>
+
+   <nav class="navbar navbar-expand-sm border-bottom" style="font-size: large;">
+      <div class="container-fluid">
+
+         <a class="navbar-brand" data-toggle="tooltip" data-placement="bottom" title="Settings" style="font-size: large; padding-right: 35px; padding-left: 20px;" href="#" onclick="openSettings();"><i class="fas fa-cog"></i></a>
+
+         <div class="navbar-collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1" id="chat-ul">
+               <li class="nav-item">
+                  <a class="nav-link dropdown-toggle" data-toggle="collapse" data-target="#side-menu" href="#" style="font-size: large; padding-right: 15px;"><i class="fas fa-comment-alt"></i></a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link dropdown-toggle" data-toggle="collapse" data-target="#users-menu" href="#" style="font-size: large; padding-right: 15px;"><i class="fas fa-users"></i></a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" data-toggle="collapse" data-target="#mainNavbar" href="#" style="font-size: large; padding-right: 15px;"><i class="fas fa-arrow-up"></i></a>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </nav>
+
+   <div class="main">
+      <div class="side-menu collapse" id="side-menu">
+
+         <a class="room-button" id="create-room-btn" onclick="openModal();" href="#"><strong>+</strong></a>
+         <hr class="w-100 mb-0" />
+      </div>
+      <div class="side-menu collapse p-2 pt-4" id="users-menu">
+
+         <h4>Users in the room:</h4>
+         <hr class="w-100 mt-1" />
+      </div>
+
+      @RenderBody()
+   </div>
+</body>
+</html>

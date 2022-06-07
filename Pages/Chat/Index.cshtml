@@ -1,0 +1,1287 @@
+﻿@page
+@model Stories.Pages.Chat.IndexModel
+@{
+}
+
+<div class="chat">
+   <div class="chat-body" id="chat-body">
+   </div>
+   <div class="chat-input row m-0">
+      <div class="col-2">
+         <select id="send-to" class="form-control chat-control">
+            <option value="everyone" class="form-group">Everyone</option>
+         </select>
+      </div>
+      <div class="col-10" style="margin-top:3px;">
+         <input type="text" id="message-text" class="form-control chat-control;" onkeypress="handle(event);" />
+      </div>
+   </div>
+</div>
+<div class="modal" id="create-room-modal">
+
+   <form class="modal-body">
+      <button type="button" class="close btn btn-danger" onclick="closeModal();">x</button>
+      <header>Create Room</header>
+      <div>
+         <input id="create-room-input" class="form form-control form-group" />
+      </div>
+      <footer>
+         <div>
+            Is Private:
+         </div>
+         <div>
+            <input id="privateRoom" type="checkbox" style="margin: 5px;" />
+         </div>
+         <button class="btn btn-primary" style="margin-left: auto;" onclick="createRoom($('#create-room-input').val());">Create</button>
+      </footer>
+   </form>
+</div>
+<div class="modal" id="profile">
+   <div class="modal-body" id="profile-frame" style="min-width: 500px;">
+   </div>
+</div>
+<div class="modal active" id="connecting">
+   <div class="modal-body" id="connecting-frame">
+      <img src="/img/connecting.gif" />
+   </div>
+</div>
+
+<div class="modal" id="administer">
+   <div class="modal-admin" id="administer-frame">
+   </div>
+</div>
+
+<div class="modal" id="ban-user" style="width: 350px;">
+   <div class="modal-admin" id="ban-user-body">
+   </div>
+</div>
+
+<div class="modal" id="send-message" style="width: 350px;">
+   <div class="modal-admin" id="send-message-body">
+   </div>
+</div>
+
+<div class="modal" id="banned" style="width: 400px;">
+   <div class="banned-body" id="banned-body" style="width: 400px;">
+   </div>
+</div>
+
+<div class="modal" id="settings" style="min-width: 480px;">
+   <form id="chatSettingsForm" class="modal-body" style="min-width: 450px;" method="post">
+      <button type="button" class="close btn btn-danger" onclick="closeSettings();">x</button>
+      <header>Chat Settings:</header>
+      <div><hr /></div>
+      <div class="row container-fluid" style="vertical-align: middle;">
+         <div class="col-11">Private message notifications:</div>
+         <div class="col-1"><input asp-for="Input.PrivateMessages" id="Input_PrivateMessages" style="height: 1em;" type="checkbox" /></div>
+      </div>
+      <div class="row container-fluid" style="vertical-align: middle;">
+         <div class="col-11">System message notifications:</div>
+         <div class="col-1"><input asp-for="Input.SystemMessages" id="Input_SystemMessages" style="height: 1em;" type="checkbox" /></div>
+      </div>
+      <div class="row container-fluid" style="vertical-align: middle;">
+         <div class="col-11">Public message sounds:</div>
+         <div class="col-1"><input asp-for="Input.PublicMessages" id="Input_PublicMessages" style="height: 1em;" type="checkbox" /></div>
+      </div>
+      <div>
+         <hr />
+      </div>
+      Message text colour <br />
+      <input class="form form-group form-control" id="txtColor" placeholder="Message text colour" data-jscolor="{value: myTextColor, position:'top', height:80, backgroundColor:'#333',
+                          palette:'rgba(0,0,0,0) #fff #808080 #000 #996e36 #f55525 #ffe438 #88dd20 #22e0cd #269aff #bb1cd4',
+                          paletteCols:11, hideOnPaletteClick:true, onInput: 'update(this, \'t\')'}" />
+      Message background colour <br />
+      <input class="form form-group form-control" id="bgColor" placeholder="Message background colour" data-jscolor="{value: myBackgroundColor, position:'top', height:80, backgroundColor:'#333',
+                          palette:'rgba(0,0,0,0) #fff #808080 #000 #996e36 #f55525 #ffe438 #88dd20 #22e0cd #269aff #bb1cd4',
+                          paletteCols:11, hideOnPaletteClick:true, onInput: 'update(this, \'b\')'}" />
+      Name colour <br />
+      <input class="form form-group form-control" id="nmColor" placeholder="Name colour" data-jscolor="{value: myNameColor, position:'top', height:80, backgroundColor:'#333',
+                          palette:'rgba(0,0,0,0) #fff #808080 #000 #996e36 #f55525 #ffe438 #88dd20 #22e0cd #269aff #bb1cd4',
+                          paletteCols:11, hideOnPaletteClick:true, onInput: 'update(this, \'n\')'}" />
+      <div>
+         <hr />
+         <div id="msgBody" class="bubble div-center">
+            <div class="row" style="align-content: center;">
+               <div class="col-1">
+                  <img onload="this.src='/Images/'+ myUserId + '/ProfilePhoto_32.png'" onerror="this.onerror=null;this.src='/Images/anonymous.png';" class="rounded-circle border margin-0">
+               </div>
+               <div class="col-9 offset-1">
+                  <div id="signature">
+                     <b>Lord Of The Server</b>
+                  </div>
+                  <div>test</div>
+               </div>
+               <div class="col-1" style="margin-right: 10px;">
+                  <b>[17:17] </b>
+               </div>
+            </div>
+         </div>
+      </div>
+      <footer>
+         <button class="btn btn-primary" id="saveChat" onclick="saveChatProfile()">Save settings</button>
+      </footer>
+      <input asp-for="Input.UserId" type="hidden" id="Input_UserId" />
+      <input type="hidden" asp-for="Input.NameTextColor" id="Input_NameTextColor" />
+      <input type="hidden" asp-for="Input.MessageTextColor" id="Input_MessageTextColor" />
+      <input type="hidden" asp-for="Input.BackgroundColor" id="Input_BackgroundColor" />
+   </form>
+</div>
+<script>
+noLeft();
+"use strict";
+
+/* Basic Settings */
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/chathub")
+    .configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect([2000, 4000, 6000, 10000, 20000, 30000, 30000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 600000, 600000, 600000, 600000, 600000, 600000])
+    .build();
+
+var createRoomBtn = document.getElementById("create-room-btn");
+var createRoomModal = document.getElementById("create-room-modal");
+var activeClasses = "";
+var actualRoomName = "Living Room";
+var AdminId = "";
+var AdminKey = "";
+var isElevated = false;
+var isRoomOwner = false;
+var isRoomAdmin = false;
+var usersList = "";
+var adminsList = "";
+var myUserId = "@Model.UserChatSettings.UserId";
+var myTextColor ="@Model.UserChatSettings.ChatFontColor";
+var myBackgroundColor ="@Model.UserChatSettings.ChatBackgroundColor";
+var myNameColor = "@Model.UserChatSettings.NameFontColor";
+var systemNotificationsEnabled = @Model.UserChatSettings.SystemMessageNotification.ToString().ToLower();
+var messagesNotificationEnabled = @Model.UserChatSettings.MessageNotification.ToString().ToLower();
+var privateChatNotificationsEnabled = @Model.UserChatSettings.PrivateMessageNotification.ToString().ToLower();
+$("#Input_MessageTextColor").val(myTextColor);
+$("#Input_NameTextColor").val(myNameColor);
+$("#Input_BackgroundColor").val(myBackgroundColor);
+$("#Input_UserId").val(myUserId);
+
+/*  Signal R - Connection Starts - updated 23/06/2021 */
+
+connection.start().then(function () {
+    console.info("Connected");
+    $("#connecting").removeClass('active');
+    //document.getElementById("sendButton").disabled = false;
+    connection.invoke("ListRooms", false).catch(function (err) {
+        return console.error(err.toString());
+    })
+}).catch(function (err) {
+    $("#connecting").addClass('active');
+    return console.error(err.toString());
+});
+
+/* Signal R - Connection Colapses  - created 23/06/2021 */
+
+connection.onreconnecting(error => {
+   openConnecting();
+});
+
+/* Signal R - Connection Re-established - created 23/06/2021 */
+
+connection.onreconnected(connectionId => {
+   closeConnecting();
+   $("#chat-body").append(printSystemMessage("Reconnected"));
+})
+
+/* Signal R - Received Rooms List - updated 23/06/2021 */
+
+connection.on("receivedRoomsList", (jsonString) => {
+    if (activeClasses != "") {
+
+        arrayClasses = activeClasses.split(",");
+
+        var ja = 0;
+        var countRooms = arrayClasses.length;
+
+        for (ja = 0; ja < countRooms; ja++) {
+            $("#" + arrayClasses[ja]).detach();
+            console.info("class " + arrayClasses[ja] + " removed");
+        }
+
+        activeClasses = "";
+    }
+
+    var i = 0;
+    var encoded = JSON.parse(jsonString)
+    var records = encoded.length;
+    var className = actualRoomName.toLowerCase().replace(/ /g, '');
+    activeClasses += className;
+    $('#side-menu').append('<a class="room-button" id="'+ className +'" href="#"><u><b>' + actualRoomName +'</b></u></a>');
+    while (i < records) {
+        var record = encoded[i];
+        var roomName = record.RoomName
+        if (roomName != actualRoomName){
+
+            className = roomName.toLowerCase().replace(/ /g, '');
+            activeClasses += "," + className;
+            var newHtml = '<a class="room-button" id="' + className + '" onclick="changeRoom(\'' + roomName + '\')" href="#">'+ roomName +'</a>';
+            $("#side-menu").append(newHtml);
+
+        }
+        i++;
+    }
+});
+
+/* Signal R - Received Switch Group */
+
+connection.on("receivedSwitchGroup", (NewRoomName, RoomType) => {
+    // "Welcome in Room XYZ" to chat window -> reload contacts, change roomName variable
+    console.info("receivedSwitchGroup to" +NewRoomName);
+    if (actualRoomName != "") {
+        actualClassName = actualRoomName.toLocaleLowerCase().replace(/ /g, '');
+        $('#' + actualClassName).fadeIn(500);
+    }
+    actualRoomName = NewRoomName;
+    var theName = NewRoomName.toLowerCase().replace(/ /g, '');
+
+    $('#' + theName).fadeOut(500);
+
+    if(systemNotificationsEnabled)
+        playSound("/sounds/connected.wav");
+
+    $("#chat-body").append('<div class="welcome div-center bubble" style="display: none;"><code><big> Welcome in ' + NewRoomName + '</big></code></div>');
+    $(".welcome").fadeIn(500);
+    requestAdminsList(NewRoomName);
+});
+
+   connection.on("receivedJoinedPrivateRoom", (NewRoomName) => {
+      printSystemMessage("Welcome in private room <b>" + NewRoomName + "</b>");
+});
+
+/* Signal R - Received List Of Users  -modified 22-06-2021  */
+
+connection.on("receiveListOfUsers", (jsonList, adminList) => {
+
+    var newjsonList = JSON.parse(jsonList);
+    var newadminList = JSON.parse(adminList);
+    usersList = newjsonList;
+    adminsList = newadminList;
+
+    $("#send-to").html("");
+    $("#users-menu").html("");
+
+    var appendMenu ="<table id='userList'>";
+    $("#send-to").html('<option value="everyone" class="form-group" id="forAll">'+actualRoomName+'</option');
+    for (rlou = 0; rlou < newjsonList.length; rlou++)
+    {
+         var unit = newjsonList[rlou];
+         appendMenu += "<tr width='100%' id='tbl_"+unit.UserId+"'>";
+         appendMenu +="<td style='width: 40px; padding: 5px;'>" + '<img src="/Images/'+ unit.UserId + '/ProfilePhoto_32.png" onerror="this.onerror=null;this.src=\'/Images/anonymous.png\';" class="rounded-circle border margin-0">';
+         appendMenu +="</td>";
+         appendMenu +="<td>";
+         appendMenu +="<a href='#' onclick=Interact('"+unit.UserId+"')>"+ unit.DisplayedName +"</a>";
+         appendMenu +="</td>";
+         appendMenu +="</tr>";
+
+         $("#send-to").append('<option value="'+unit.UserId+'" id="opt_'+unit.UserId+'" class="form-group">'+unit.DisplayedName+'</option>');
+    }
+
+    $("#users-menu").append("</table>");
+    $("#users-menu").html(appendMenu);
+});
+
+/* Signal R - Received List of users in other groups - modified 28-06-2021 */
+var otherGroupsList = "";
+
+connection.on("receiveOtherGroupsUsers", (outList) =>{
+    console.info(outList);
+    otherGroupsList = JSON.parse(outList);
+})
+
+/* Signal R - Received Admin Message - created 28/06/2021 */
+
+connection.on("receivedAdminMessage", (message) => {
+printAdminMessage(message);
+})
+
+/* Signal R - Received list of Admins - created 23/06/2021 */
+
+connection.on("receivedAdminsList", (jsonAdmins) => {
+    console.info ("Received Admins List");
+    var admins = JSON.parse(jsonAdmins);
+    console.info (jsonAdmins);
+    var countAdmins = admins.length;
+    var tmp = 0;
+    while (tmp < admins.length) {
+    console.info ("Admin = " + admins[tmp]);
+        $("#tbl_"+admins[tmp]).css('background-color','rgb(200 60 60 / 20%)');
+        tmp++;
+    }
+
+});
+
+/* Signal R - Received You are an Admin - created 23/06/2020  */
+
+connection.on("receivedYouAreAdmin", (adminHash, elevated, adminId, isOwner) => {
+    var htmlAdminIcon = '<li id="admin-button" class="nav-item">\n<a class="nav-link administrator" onclick="openAdmin();" href="#" style="font-size: large; padding-right: 15px;"><i class="fas fa-users-cog"></i></a>\n</li>';
+    $("#admin-button").remove();
+    $("#chat-ul").append(htmlAdminIcon);
+    if (elevated)  isElevated = true;
+    AdminKey = adminHash;
+    AdminId = adminId;
+    isRoomOwner = isOwner;
+   isRoomAdmin = true;
+   printSystemMessage("You are now Administrator of the Chatroom");
+});
+   /* Signal R - No Other Admin in the room - created 26/06/2021 */
+
+ connection.on("noOtherAdmin",() => {
+      window.alert("No other admin in the room.\n Please make other user administrator first.");
+   })
+
+   /* Signal R - Refresh Administration window - created 26/06/2021 */
+   connection.on("refreshAdmin", () => {
+      closeAdmin();
+      openAdmin();
+   })
+
+   connection.on("youDemoted", () => {
+      $("#admin-button").remove();
+      printSystemMessage("You are no more the Administrator");
+   })
+
+   /* Signal R - New User in the room - updated 22/06/2021 */
+
+connection.on("receivedUserJoined", (userId, displayedName) => {
+
+    $("#chat-body").append('<div class="success div-center"><code class="success"><b>'+ displayedName +'</b> joined the room');
+
+         var appendUser = "<tr width='100%' id='tbl_"+userId+"'>";
+         appendUser +="<td style='width: 40px; padding: 5px;'>" + '<img src="/Images/'+ userId + '/ProfilePhoto_32.png" onerror="this.onerror=null;this.src=\'/Images/anonymous.png\';" class="rounded-circle border margin-0">';
+         appendUser +="</td>";
+         appendUser +="<td>";
+         appendUser +="<a href='#' onclick=Interact('"+userId+"')>"+ displayedName +"</a>";
+         appendUser +="</td>";
+         appendUser +="</tr>";
+         $("#userList").append(appendUser);
+
+         $("#send-to").append('<option value="'+userId+'" id="opt_'+userId+'" class="form-group">'+displayedName+'</option>');
+
+    if (systemNotificationsEnabled)
+        playSound("/sounds/joned-room.wav");
+    });
+
+/* Signal R - User left the room  - updated 22/06/2021 */
+
+connection.on("receivedUserLeft", (userId, displayedName) => {
+
+    $("#chat-body").append('<div class="div-center"><code class="error"><b>'+ displayedName +'</b> left the room');
+    $("#tbl_"+userId).remove();
+    $("#opt_"+userId).remove();
+
+    if(systemNotificationsEnabled)
+        playSound("/sounds/disconnected.wav");
+    });
+
+/* Signal R - Received Message  - updated 22/06/2021 */
+
+connection.on("receivedMessage", (Id, DisplayedName, message, roomName, userColours) => {
+    console.info("received message: " + message +" from "+ DisplayedName + " colors: " + userColours);
+
+    if (Id == myUserId) var addedClass = "div-right";
+    else var addedClass = "div-left";
+    var usedColors = userColours.split(";");
+    var nameColor = usedColors[0];
+    console.info(usedColors[0]);
+    var messageColor = usedColors[1];
+    var messageBackground = usedColors[2];
+    var displayedName = DisplayedName;
+
+    // define the bubble
+    var time = new Date();
+    var hh = ("0" + time.getHours()).slice(-2);
+    var mm = ("0" + time.getMinutes()).slice(-2);
+
+    var timeStamp = hh + ":" + mm;
+    var html = '<div class="bubble '+addedClass+'" style="display: none; color: ' + messageColor + '; background-color: '+messageBackground+';">';
+    html += '<div class="row" style="align-context: justify-center;">';
+    html += '<div class="col-1">';
+    html += '<img src="/Images/'+ Id + '/ProfilePhoto_32.png" onerror="this.onerror=null;this.src=\'/Images/anonymous.png\';" class="rounded-circle border margin-0">';
+    html += '</div>';
+    html += '<div class="col-9 offset-1">'
+    html +='<div class="nav-link link" style="color: '+ nameColor +'; margin-bottom: 1em;" onclick="Interact(\''+Id+'\')"><b>'+ displayedName +'</b></div><div>' + message + '</div>';
+    html +='</div>';
+    html +='<div class="col-1" style="margin-right: 10px;"><b>[' + timeStamp + '] </b></div>';
+    html +='</div>';
+    html +='</div>';
+    html +='</div>';
+
+    $("#chat-body").append(html);
+    $(".bubble").fadeIn(500);
+    if(messagesNotificationEnabled)
+    playSound("/sounds/message.wav");
+});
+
+/* Signal R - Received Invite - created 29/06/2021 */
+
+connection.on("receivedSystemMessage", (message) => {
+    printSystemMessage(message);
+})
+
+connection.on("receivedInvite", (adminId, adminName, RoomName) => {
+    console.info("Received invitation from " + adminName + " to join " + RoomName);
+    var tempHtml = "";
+      tempHtml += "<div class='invitation'>\n";
+      tempHtml += "<img src='/Images/"+ adminId +"/ProfilePhoto_32.png'> <b>"+adminName+"<b> Invited you to the room: <a href='#' class='info' onclick='changeRoom(\"" + RoomName + "\")'>" + RoomName + "</a>";
+      tempHtml += "</div>";
+      console.info(tempHtml);
+      $("#chat-body").append(tempHtml);
+      $(".invitation").show(300);
+});
+
+/* Signal R - Received Private Message */
+
+connection.on("receivedPrivateMessage", (Id, DisplayedName, message, userColours) => {
+    console.info("received message: " + message +" from "+ DisplayedName + " colors: " + userColours);
+
+    if (Id == myUserId) var addedClass = "div-right";
+    else var addedClass = "div-left";
+    var usedColors = userColours.split(";");
+    var nameColor = usedColors[0];
+    console.info(usedColors[0]);
+    var messageColor = usedColors[1];
+    var messageBackground = usedColors[2];
+    var displayedName = DisplayedName;
+
+    // define the bubble
+    var time = new Date();
+    var hh = ("0" + time.getHours()).slice(-2);
+    var mm = ("0" + time.getMinutes()).slice(-2);
+
+    var timeStamp = hh + ":" + mm;
+    var html = '<div class="bubble '+addedClass+'" style="display: none; border-radius: 0ps; color: ' + messageColor + '; background-color: '+messageBackground+';">';
+    html += '<div class="row" style="align-context: justify-center;">';
+    html += '<div class="col-1">';
+    html += '<img src="/Images/'+ Id + '/ProfilePhoto_32.png" onerror="this.onerror=null;this.src=\'/Images/anonymous.png\';" class="rounded-circle border margin-0">';
+    html += '</div>';
+    html += '<div class="col-9 offset-1">'
+    html +='<div class="nav-link link" style="color: '+ nameColor +'; margin-bottom: 1em;" onclick="Interact(\''+Id+'\')"><b>'+ displayedName +'</b></div><div>' + message + '</div>';
+    html +='</div>';
+    html +='<div class="col-1" style="margin-right: 10px;"><b>[' + timeStamp + '] <i><u>Private</u></i> </b></div>';
+    html +='</div>';
+    html +='</div>';
+    html +='</div>';
+
+    $("#chat-body").append(html);
+    $(".bubble").fadeIn(500);
+    if (privateChatNotificationsEnabled)
+    playSound("/sounds/private-message.wav");
+}); //NameFont, ChatFont, ChatBackground
+
+ connection.on("receivedKick", () => {
+      changeRoom("Living room");
+      printSystemMessage("You were kicked out from the room by the Administrator.");
+   })
+
+   /* Signal R - Received Room Ban */
+   connection.on("receivedChatBan", (reason, time) => {
+        console.info("Received Chat ban");
+        action = 'redirect';
+        openBanned();
+         var banHtml = "";
+      banHtml += '<h3 style="text-align: center;" class="error">You are banned from the Room</h3>';
+      banHtml += '<hr />';
+      banHtml += '<div id="banReason"><b>Reason: </b>'+reason+'</div>';
+      banHtml += '<div style="font-size: 20px; text-align: center;">Try again in: </div>';
+      banHtml += '<div style="font-size: 20px; text-align: center; color: rgba(128,0,0,1);" id="countdown">';
+      banHtml += '</div>';
+      banHtml += '<hr />';
+      if (action == 'redirect') {
+         banHtml += '<button style="margin-left: auto; margin-right: auto;" class="btn btn-primary" onclick="leaveChat()"> Leave Chat </button>';
+      } else {
+         banHtml += '<button style="margin-left: auto; margin-right: auto;" class="btn btn-info" onclick="closeBanned();changeRoom(\'Living room\')"> Go to Living room </button>';
+      }
+         $("#banned-body").html(banHtml);
+
+      var distance = (time * 1000)+1000;
+      var x = setInterval(function () {
+
+         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+         // Output the result in an element with id="demo"
+         $("#countdown").html(days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ");
+
+         if (distance < 0) {
+            clearInterval(x);
+            closeBanned();
+            changeRoom('Living room');
+         }
+         distance -= 1000;
+      }, 1000);
+
+   })
+
+   connection.on("receivedBan", (reason, time, roomname) => {
+      if (roomname == 'Living room') var action = 'redirect';
+      else action = 'leaveRoom';
+
+      openBanned();
+
+      var banHtml = "";
+      banHtml += '<h3 style="text-align: center;" class="error">You are banned from the Room</h3>';
+      banHtml += '<hr />';
+      banHtml += '<div id="banReason"><b>Reason: </b>'+reason+'</div>';
+      banHtml += '<div style="font-size: 20px; text-align: center;">Try again in: </div>';
+      banHtml += '<div style="font-size: 20px; text-align: center; color: rgba(128,0,0,1);" id="countdown">';
+      banHtml += '</div>';
+      banHtml += '<hr />';
+      if (action == 'redirect') {
+         banHtml += '<button style="margin-left: auto; margin-right: auto;" class="btn btn-primary" onclick="leaveChat()"> Leave Chat </button>';
+      } else {
+
+         banHtml += '<button style="margin-left: auto; margin-right: auto;" class="btn btn-info" onclick="closeBanned();changeRoom(\'Living room\')"> Go to Living room </button>';
+      }
+         $("#banned-body").html(banHtml);
+
+      var distance = (time * 1000)+1000;
+      var x = setInterval(function () {
+
+         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+         // Output the result in an element with id="demo"
+         $("#countdown").html(days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ");
+
+         if (distance < 0) {
+            clearInterval(x);
+            closeBanned();
+            changeRoom('Living room');
+         }
+         distance -= 1000;
+      }, 1000);
+
+   })
+
+/* Create New Room call for Signal R */
+
+function createRoom(room) {
+    var type="public";
+    if (room.length < 3) {
+        window.alert("At least three characters, please");
+        return;
+    } else {
+        if ($("#privateRoom").prop("checked")) type = "private";
+        connection.invoke("CreateRoom", room, type).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        event.preventDefault();
+        $("#create-room-modal").removeClass("active");
+        $("#create-room-input").val("");
+    }
+}
+
+/* Send Message */
+
+function handle(e) {
+    if (e.keyCode === 13) {
+        var message = $("#message-text").val();
+        message = message.trim();
+        if (message.length < 1) {
+        } else {
+            var room = actualRoomName;
+            var sendTo = $("#send-to").val();
+            console.info(message);
+            connection.invoke("SendMessage", message, actualRoomName, sendTo, myNameColor +";"+ myTextColor + ";"+ myBackgroundColor).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+        $("#message-text").val("");
+    }
+}
+
+/* Change Room */
+function requestAdminsList(roomName) {
+    connection.invoke("RequestAdminsList", roomName).catch(function (err) {
+        return console.error(err.toString());
+    })
+}
+
+function requestUsersList(roomName, addforeignerrooms) {
+    connection.invoke("RequestUserList", roomName, addforeignerrooms).catch(function (err) {
+        return console.error(err.toString());
+    })
+}
+
+function requestOtherRooms(roomName) {
+    connection.invoke("RequestUsersFromOthers", roomName).catch(function(err){
+        return console.error(err.toString());
+    })
+}
+
+function changeRoom(roomName) {
+   console.info("New room:", roomName);
+   if (!actualRoomName) actualRoomName = "";
+   connection.invoke("ChangeRoom", roomName, actualRoomName, "").catch(function (err) {
+        return console.error(err.toString());
+    })
+}
+
+if(systemNotificationsEnabled) $("#Input_SystemMessages").prop("checked", true);
+            if(messagesNotificationEnabled) $("#Input_PublicMessages").prop("checked", true);
+            if(privateChatNotificationsEnabled) $("#Input_PrivateMessages").prop("checked", true);
+             setColor();
+            function update(picker, selector) {
+                if (selector == 't'){
+                    console.info("Text color updated: " + picker.toRGBAString());
+                    $("#msgBody").css("color", picker.toRGBAString());
+                    myTextColor = picker.toRGBAString();
+                    console.info("New Text Color: " + myTextColor);
+                    $("#Input_MessageTextColor").val(myTextColor);
+                }
+                if (selector == 'b'){
+                    console.info("Background updated: " + picker.toRGBAString());
+                    $("#msgBody").css("background", picker.toRGBAString());
+                    myBackgroundColor = picker.toRGBAString();
+                    console.info("New Background Color: " + myBackgroundColor);
+                    $("#Input_BackgroundColor").val(myBackgroundColor);
+                }
+                if (selector == 'n'){
+                    console.info("Name color updated: " + picker.toRGBAString());
+                    $("#signature").css("color", picker.toRGBAString());
+                    myNameColor = picker.toRGBAString();
+                    console.info("New Name Color: " + myNameColor);
+                    $("#Input_NameTextColor").val(myNameColor);
+                }
+
+            }
+
+ function setColor(){
+             $("#signature").css("color", myNameColor);
+             $("#msgBody").css("color", myTextColor);
+             $("#msgBody").css("background-color", myBackgroundColor);
+             }
+
+ function Interact(partnerId)
+             {
+                 $.get("/api/getuserprofile/"+partnerId, function(data){
+                 var isPrivate = "<i>Private </i>";
+                 var NA = "<i>N/A </i>"
+                 var profileData = JSON.parse(data);
+                 if (!profileData.Email) profileData.Email = isPrivate;
+                 if (!profileData.FirstName) var Name = isPrivate;
+                 else var Name = profileData.FirstName + " " + profileData.LastName;
+                 var dt = new Date(profileData.RegistrationTime);
+                 // ensure date comes as 01, 09 etc
+                var DD = ("0" + dt.getDate()).slice(-2);
+                // getMonth returns month from 0
+                var MM = ("0" + (dt.getMonth() + 1)).slice(-2);
+                var YYYY = dt.getFullYear();
+                var hh = ("0" + dt.getHours()).slice(-2);
+                var mm = ("0" + dt.getMinutes()).slice(-2);
+                var ss = ("0" + dt.getSeconds()).slice(-2);
+                var date_string = DD + "/" + MM + "/" + YYYY;
+                profileData.RegistrationTime = date_string;
+                console.info("DateString is " + date_string);
+                if (!profileData.Age) profileData.Age = isPrivate;
+                if (!profileData.CountryName) profileData.CountryName = isPrivate;
+                if (!profileData.PhoneNumber) profileData.PhoneNumber = isPrivate;
+                if (profileData.Gender == 0) profileData.Gender = "Female";
+                    else profileData.Gender = "Male";
+                if (!profileData.Info) profileData.Info = "";
+                if (!profileData.Facebook) profileData.Facebook = "";
+                if (!profileData.Twitter) profileData.Twitter = "";
+                if (!profileData.Google) profileData.Google = "";
+                if (!profileData.Microsoft) profileData.Microsoft = "";
+                if (profileData.Friends.Length == 0) profileData.Friends = "";
+                else {
+                    var cnt = 0;
+                    var friendsHtml = "<b>";
+                    while (cnt < profileData.Friends.Length) {
+                        friendsHtml += "<a href='#' class='link nav-link' onclick='Interact(\'"+profileData.Friends[cnt].Id+")'>"+profileData.Friends[cnt].DisplayedName+"</a>";
+                        cnt ++;
+                    }
+                    friendsHtml += "</b>"
+                    profileData.Friends = friendsHtml;
+                }
+
+                 console.info(String(profileData.Friends));
+
+                 var htmlProfile ="<div class='container-fluid'>";
+                 htmlProfile +='<button type="button" class="close btn btn-danger" onclick="closeProfile();">x</button>';
+                 htmlProfile += "<h3 style='margin-left: auto; margin-right: auto;'> "+ profileData.DisplayedName + "</h3>\n";
+                 htmlProfile += "<hr style='width:100%' />\n";
+
+                 // Profile Picture
+                 htmlProfile += "<div class='row'>";
+                 htmlProfile += "<div class='container-fluid'>";
+                 htmlProfile += "<img style='float: left; width: 150px; min-width:150px; height: 150px; min-height: 150px; margin-left: 10px; margin-right: 10px; margin-top: 10px;'  src= '"+profileData.PictureUrl+"'>\n";
+
+                 // Here we put table with data
+                 htmlProfile += "<table style='width: 280px; margin-left: auto; margin-right: auto; padding: 5px;'>\n";
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td style='padding: 5px; width: 130px;'>\n";
+                 htmlProfile += "<b> Country: </b></div>\n";
+                 htmlProfile += "</td>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 if (!profileData.CountryName) profileData.CountryName = "The Earth";
+                 htmlProfile +=  profileData.CountryName +"\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Name: </b>\n";
+                 htmlProfile += "</td>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += Name +"\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Phone: </b>\n";
+                 htmlProfile += "</td>";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.PhoneNumber +"\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Email: </b>\n";
+                 htmlProfile += "</td>";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.Email +"\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Age: </b>\n";
+                 htmlProfile += "</td>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.Age + " yrs.\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Registered: </b>\n";
+                 htmlProfile += "</td>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.RegistrationTime + "\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Articles: </b>\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.Articles + "\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+
+                 htmlProfile += "<tr>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += "<b> Critics: </b>\n";
+                 htmlProfile += "</td>\n";
+                  htmlProfile += "<td style='padding: 5px;'>\n";
+                 htmlProfile += profileData.Critics + "\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+                  htmlProfile += "</table>\n";
+                  htmlProfile += "<hr style='width:100%' />\n";
+                  if (profileData.Info != "") {
+                 htmlProfile += "<h4 style='margin-left: auto; margin-right: auto; text-align: center;'> Info: </h4>"
+                  htmlProfile += "<hr style='width:100%' />\n";
+                 htmlProfile += "<div class='container-fluid'>\n";
+                 htmlProfile += profileData.Info + "\n";
+                 htmlProfile += "</div>\n";
+                 htmlProfile += "<hr style='width:100%' />\n";
+                 }
+
+                 if (profileData.Facebook != "" && profileData.Twitter != "" && profileData.Twitter != "" && profileData.Google != "") {
+                 htmlProfile += "<h4> Social Media: </h4>\n";
+                 htmlProfile += "<table style='width: 480px; margin-left: auto; margin-right: auto; padding: 3px;'>\n";
+                 if (profileData.Facebook != ""){
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<b>Facebook</b>";
+                 htmlProfile += "</td>";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<a href='"+profileData.Facebook+"' class='link my' style='padding: 3px; margin: 3px;' target='_new'>"+profileData.Facebook+"</a>\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+                 } if (profileData.Twitter != ""){
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<b>Twitter</b>";
+                 htmlProfile += "</td>";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<a href='"+profileData.Twitter+"' class='link my' style='padding: 3px; margin: 3px;' target='_new'>"+profileData.Twitter+"</a>\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+                 } if (profileData.Google != ""){
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<b>Google</b>";
+                 htmlProfile += "</td>";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<a href='"+profileData.Google+"' class='link my' style='padding: 3px; margin: 3px;' target='_new'>"+profileData.Google+"</a>\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+                 } if (profileData.Microsoft != ""){
+                 htmlProfile += "<tr>\n";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<b>Microsoft</b>";
+                 htmlProfile += "</td>";
+                 htmlProfile += "<td>\n";
+                 htmlProfile += "<a href='"+profileData.Microsoft+"' class='link my' style='padding: 3px; margin: 3px;' target='_new'>"+profileData.Microsoft+"</a>\n";
+                 htmlProfile += "</td>\n";
+                 htmlProfile += "</tr>\n";
+                 }
+                 htmlProfile += "</table>\n";
+                 htmlProfile += "<hr style='width:100%' />\n";
+                 }
+
+                 htmlProfile += "</div>";
+                 htmlProfile += "</div>";
+                 htmlProfile += "</div>";
+                 $("#profile-frame").html(htmlProfile);
+                 $("#profile").addClass("active");
+                });
+             }
+
+/*
+ *  Functions not directly related to Signal-R
+ */
+
+function playSound(url) {
+    const audio = new Audio(url);
+    audio.play();
+}
+
+/* New Room Modal */
+
+function openModal() {
+    $("#create-room-modal").addClass('active');
+}
+
+function closeModal() {
+    $("#create-room-modal").removeClass("active");
+}
+
+/* Settings Modal */
+
+function openSettings() {
+    $("#settings").addClass('active');
+}
+
+function closeSettings() {
+    $("#settings").removeClass('active');
+}
+
+/* Profile Modal */
+
+function openProfile() {
+    $("#profile").addClass('active');
+}
+
+function closeProfile() {
+    $("#profile").removeClass('active');
+}
+
+function openConnecting() {
+    $("#connecting").addClass('active');
+}
+
+function closeConnecting() {
+    $("#connecting").removeClass('active')
+}
+
+function openAdmin() {
+    $("#administer").addClass("active");
+    htmlAdmin = "";
+    $("#administer-frame").html(htmlAdmin);
+    console.info("Actual room name is: " + actualRoomName);
+    requestUsersList(actualRoomName, false);
+    requestOtherRooms(actualRoomName);
+
+    setTimeout(function() {
+        if ((AdminId.length != 0) || (AdminKey.length != 0)) {
+            var htmlAdmin = '<button type="button" class="close btn btn-danger" onclick="closeAdmin();">x</button>';
+            htmlAdmin += "<h3 style='text-align: center; width: 100%; padding 5px; margin-top: 5px;'> Chat Administration</h3>";
+            htmlAdmin += "<hr style='width: 90%; margin-left: auto; margin-right: auto;' />";
+            htmlAdmin += "<table style='width: 90%; padding: 3px; margin: 3px; margin-left: auto; margin-right: auto; align-content: center; vertical-align: center;'>\n";
+
+            var tms = 0;
+            while (tms < usersList.length) {
+
+                var actualIsElevated = false;
+                var actualIsAdmin = false;
+                var actualIsUser = false;
+                var actualUser = usersList[tms].UserId;
+                if (actualUser == myUserId) {
+                    actualIsUser = true;
+                }
+
+                if (usersList[tms].IsElevated == true) {
+                    console.info("Admin found");
+                    actualIsElevated = true;
+                }
+
+                var sm = 0;
+                console.info(adminsList.length + "admins in the room");
+                while (sm < adminsList.length) {
+                    console.info("Comparing " + adminsList[sm] + " and " + usersList[tms].UserId);
+                    console.info("sm is" + sm + " tms is" + tms);
+                    if (adminsList[sm] == usersList[tms].UserId)
+                        actualIsAdmin = true;
+                    sm++;
+                };
+
+                if (actualIsUser) {
+                    var displayedName = "You";
+                } else {
+                    displayedName = usersList[tms].DisplayedName;
+                }
+
+                var background = "rgba(0,0,0,0)";
+                if (actualIsAdmin) background = "rgba(128,0,0, 0.4)";
+                if (actualIsElevated) background = "rgba(0, 128, 0, 0.4)";
+                if (actualIsUser) background = "rgba(0,0,128, 0.4)";
+                htmlAdmin += "<tr style='background-color: "+background +"'>\n";
+                htmlAdmin += "<td style='width: 38px;' style='padding-right: 5px;'><img src='/Images/" + usersList[tms].UserId + "/ProfilePhoto_32.png'></td>";
+                htmlAdmin += "<td style='width: 120px;'>" + displayedName + "</td>";
+
+        /* First Column - Make/Remove admin */
+
+                if ((actualIsElevated) || (actualIsUser) || ((!isElevated) && (actualIsAdmin))){
+                    htmlAdmin += "<td></td>\n";
+                }
+
+                if (actualIsAdmin && isElevated && !actualIsUser) {
+                    htmlAdmin += "<td><a href='#' style='width: 90px;' class ='administrator' onclick='removeAdmin(\"" + usersList[tms].UserId + "\")'>Remove Admin </a></td>\n";
+                }
+
+                if (!actualIsAdmin && !actualIsElevated && !actualIsUser) {
+                    htmlAdmin += "<td><a href='#' style='width: 90px;' class='my' onclick='addAdmin(\"" +usersList[tms].UserId + "\")'>Make admin</a></td>\n";
+                }
+
+                /* Second Column - Kick user out  - modified 26/06/2021 */
+
+                if (actualIsUser || actualRoomName == "Living room") {
+                    htmlAdmin += "<td></td>\n";
+                } else {
+
+                    if (actualIsAdmin && isElevated) {
+                        htmlAdmin +="<td><a href='#' style='width: 90px;' class='redactor' onclick='kick(\"" + usersList[tms].UserId + "\")'>Kick out</a></td>\n";
+                    }
+
+                    if (actualIsAdmin && !isElevated || actualRoomName =="Living room") {
+                        htmlAdmin +="<td></td>\n";
+                    }
+
+                    if (!actualIsAdmin && !actualIsUser && (actualRoomName != "Living room")) {
+                    htmlAdmin += "<td><a href='#' style='width: 90px;' class='redactor' onclick='kick(\"" + usersList[tms].UserId + "\")'>Kick out</a></td>\n";
+                    }
+                }
+
+                /* Third Column - Ban user */
+
+                if ((!actualIsElevated && !actualIsAdmin && !actualIsUser) || (!actualIsElevated && isElevated)) {
+                    htmlAdmin +="<td><a href='#' style='width: 90px;' class='administrator' onclick='ban(\"" + usersList[tms].UserId + "\")'>Ban from chat</a></td>\n";
+                }
+
+                if (actualIsElevated || actualIsUser) {
+                    htmlAdmin +="<td></td>\n";
+                }
+
+                /* Fourth Column - Message to user */
+
+                if (actualIsUser) {
+                    htmlAdmin +="<td></td>\n";
+                }
+
+                if (!actualIsUser) {
+                    htmlAdmin += "<td><a href='#' class='information' onclick='sendAdminMessage(\"" + usersList[tms].UserId + "\")'>Send Message</a></td>";
+                }
+
+                htmlAdmin += "</tr>\n";
+                tms++;
+                console.info("End of first loop +" + tms);
+            }
+
+            htmlAdmin += "</table>\n";
+
+            htmlAdmin += "<hr style='margin-left: auto; margin-right: auto; width: 90%' />";
+            htmlAdmin += "<div align='center' style='align-text: center; margin: 15px;'>";
+            htmlAdmin += "<a href='#' class='m-2 p-3 information' style='margin-bottom: 10px;' onclick=\"sendAdminMessage('everyone')\">Send Admin message to the room</a>";
+            htmlAdmin += "</div>";
+            htmlAdmin += "<hr style='margin-left: auto; margin-right: auto; width: 90%' />";
+            htmlAdmin += "<h4 style='text-align: center; width: 100%; padding 5px; margin-top: 5px;'>Users in other rooms:</h3>";
+            htmlAdmin += "<hr style='margin-left: auto; margin-right: auto; width: 90%' />";
+
+            htmlAdmin += "<table style='width: 90%; padding: 3px; margin: 3px; margin-left: auto; margin-right: auto; align-content: center; vertical-align: center;'>\n";
+
+            var otherGroupsUsers = otherGroupsList.length;
+
+            var lngt = 0;
+            while (lngt < otherGroupsUsers) {
+                var actualIsElevated = false;
+                var actualIsAdmin = false;
+                console.info("UserInOtherGroups["+lngt+"]");
+                var actualUser = otherGroupsList[lngt].UserId;
+
+                if (otherGroupsList[lngt].IsElevated == true) {
+                     actualIsElevated = true;
+                }
+                if (otherGroupsList[lngt].IsAdmin == true) {
+                    actualIsAdmin = true;
+                }
+
+                displayedName = otherGroupsList[lngt].DisplayedName;
+
+                var background = "rgba(0,0,0,0)";
+                if (actualIsAdmin) background = "rgba(128,0,0, 0.4)";
+                if (actualIsElevated) background = "rgba(0, 128, 0, 0.4)";
+                if (actualIsUser) background = "rgba(0,0,128, 0.4)";
+                htmlAdmin += "<tr style='background-color: "+background +"'>\n";
+                htmlAdmin += "<td style='width: 38px;' style='padding-right: 5px;'><img src='/Images/" + otherGroupsList[lngt].UserId + "/ProfilePhoto_32.png'></td>";
+                htmlAdmin += "<td style='width: 150px;'>" + displayedName + "</td>";
+
+        /* First Column - Make/Remove admin */
+                htmlAdmin += "<td><b>"+ otherGroupsList[lngt].RoomName + "</b></td>";
+
+                htmlAdmin += "<td><a href='#' style='width: 120px;' class ='administrator' onclick='inviteUser(\"" + otherGroupsList[lngt].UserId + "\",\"" + actualRoomName + "\")'> Invite to the group </a></td>\n";
+
+        /* Second Column - Kick user out  - modified 26/06/2021 */
+
+                htmlAdmin += "<td><a href='#' class='information' style='width: 100%;' onclick='sendAdminMessage(\"" + otherGroupsList[lngt].UserId + "\")'>Send the message</a></td>";
+                htmlAdmin += "</tr>\n";
+                lngt++;
+            }
+            htmlAdmin +="</table>";
+            $("#administer-frame").html(htmlAdmin);
+            }
+
+        }, 500);
+    }
+    // newjsonList newadminList
+
+function closeAdmin() {
+    $("#administer").removeClass('active');
+   }
+
+   function printAdminMessage(message) {
+      var tempHtml = "";
+      tempHtml += "<div class='admin-message'>\n";
+      tempHtml += "<span class='administrator'><b>Message from Administrator: </b></span><br>";
+      tempHtml += message;
+      tempHtml += "</div>";
+      $("#chat-body").append(tempHtml);
+      $(".admin-message").show(300);
+   }
+
+   function printSystemMessage(message) {
+      var tempHtml = "";
+      tempHtml += "<div class='system-message'>\n";
+      tempHtml += "<b><code style='font-size: 13px;'>" + message + "</code></b>";
+      tempHtml += "</div>";
+      $("#chat-body").append(tempHtml);
+      $(".system-message").show(300);
+   }
+
+   function removeAdmin(adminId) {
+      if ((myUserId.length > 1) && (AdminId > 0) && (AdminKey.length == 8)) {
+         connection.invoke("RequestRemoveAdmin", actualRoomName, adminId, AdminId, AdminKey).catch(function (err) {
+            return console.error(err.toString());
+         })
+      }
+      closeAdmin();
+      openAdmin();
+   }
+
+   function inviteUser(userId, roomName) {
+       console.info("sending invitation to " + userId + "to join " + roomName);
+       connection.invoke("RequestSendInvite", userId, roomName).catch(function (err) {
+           return console.error(err.toString());
+       })
+       closeAdmin();
+       openAdmin();
+   }
+
+   function addAdmin(adminId) {
+      if ((myUserId.length > 1) && (AdminId > 0) && (AdminKey.length == 8)) {
+         connection.invoke("RequestAddAdmin", actualRoomName, adminId, AdminId, AdminKey).catch(function (err) {
+            return console.error(err.toString());
+         })
+      }
+      closeAdmin();
+      openAdmin();
+   }
+
+   function kick(userId) {
+      if ((myUserId.length > 1) && (AdminId > 0) && (AdminKey.length == 8)) {
+         connection.invoke("RequestKickUser", actualRoomName, userId, AdminId, AdminKey).catch(function (err) {
+            return console.error(err.toString());
+         })
+      }
+      setTimeout(function () {
+         closeAdmin();
+         openAdmin();
+      }, 300);
+
+   }
+
+   function ban(userId) {
+      openBan();
+      var formHtml = "";
+      formHtml += '<button type="button" class="close btn btn - danger" onclick="closeBan();">x</button>';
+      formHtml += "<h3 style='margin-left: auto; text-align: center; margin-right: auto; margin-top: 5px;'> Ban user from the chat </h3>";
+      formHtml += "<hr width='90%' style='margin-left: auto; margin-rigth: auto; margin-bottom: 5px;'>";
+      formHtml += "<table width='90%' style='margin-left: auto; margin-right: auto; text-align: center; padding: 5px; margin: 5px;'>";
+      formHtml += "<tr>\n";
+      formHtml += "<td>Reason For the ban</td>";
+      formHtml += "<td></td>";
+      formHtml += "<td><input type='text' id='banReason' class='form-group form-control' /></td>";
+      formHtml += "</tr>\n";
+
+      formHtml += "<tr>\n";
+      formHtml += "<td>Ban time: </td>\n";
+      formHtml += "<td></td>\n";
+      formHtml += "<td><select name='ban-term' id='ban-term' class='form form-control'>";
+      formHtml += "<option value = '600' style='form-control'>10 minutes</option>";
+      formHtml += "<option value = '1200' style='form-control'>20 minutes</option>";
+      formHtml += "<option value = '1800' style='form-control'>30 minutes</option>";
+      formHtml += "<option value = '3600' style='form-control'>1 hour</option>";
+      if (isElevated) {
+         formHtml += "<option value = '7200' style='form-control'>2 hours</option>";
+         formHtml += "<option value = '21600' style='form-control'>6 hours</option>";
+         formHtml += "<option value = '43200' style='form-control'>12 hours</option>";
+         formHtml += "<option value = '86400' style='form-control'>1 day</option>";
+         formHtml += "<option value = '172800' style='form-control'>2 days</option>";
+      }
+      formHtml += "</select></td>\n";
+      formHtml += "</tr>";
+
+      formHtml += "<tr>\n";
+      if (isElevated) {
+         formHtml += "<td> Ban from whole chat:</td>\n";
+         formHtml += "<td><input type='checkbox' style='form-control form-group' id='BanFromChat' /></td> ";
+      } else {
+         formHtml += "<td></td><td></td>";
+      }
+
+      formHtml += "<td style='text-align: right; margin-left: auto;'><button class='btn btn-info' onclick='createBan(\"" + userId + "\")'>Ban user</button></td>";
+      formHtml += "</tr>";
+      formHtml += "</table>";
+      $("#ban-user-body").html(formHtml);
+
+   }
+
+   function openBan() {
+      closeAdmin();
+      $("#ban-user").addClass('active');
+   }
+
+   function closeBan() {
+      $("#ban-user").removeClass('active');
+      openAdmin();
+   }
+   function createBan(userId) {
+      if ((myUserId.length > 1) && (AdminId > 0) && (AdminKey.length == 8)) {
+         var reason = $("#banReason").val();
+         if (reason.length < 2) {
+            window.alert("Reason is mandatory");
+            return;
+         }
+         var time = $("#ban-term").val();
+         var chatBan = $("#BanFromChat").prop('checked');
+
+         console.info("Request ban user " + userId + " from room " + actualRoomName + " because of: " + reason + " for " + time + "min. User banned from whole chat: " + chatBan);
+         connection.invoke("RequestBanUser", actualRoomName, userId, reason, time, chatBan, AdminId, AdminKey).catch(function (err) {
+            return console.error(err.toString());
+         })
+         closeBan();
+      }
+   }
+   /* modified 28/06/2021 */
+
+   function openMessage() {
+      closeAdmin();
+      $("#send-message").addClass('active');
+   }
+
+   function sendAdminMessage(userId) {
+       openMessage();
+        var formHtml = "";
+      formHtml += '<button type="button" class="close btn btn - danger" onclick="closeMessage();">x</button>';
+      formHtml += "<h3 style='margin-left: auto; text-align: center; margin-right: auto; margin-top: 5px;'> Send admin message: </h3>";
+      formHtml += "<hr width='90%' style='margin-left: auto; margin-rigth: auto; margin-bottom: 5px;'>";
+      formHtml += "<table width='90%' style='margin-left: auto; margin-right: auto; text-align: center; padding: 5px; margin: 5px;'>";
+      formHtml += "<tr>\n";
+      formHtml += "<td>Message</td>";
+      formHtml += "<td></td>";
+      formHtml += "<td><input type='text' id='messageText' class='form-group form-control' /></td>";
+      formHtml += "</tr>\n";
+      formHtml += "<tr>\n";
+      formHtml += "<td></td><td></td>";
+      formHtml += "<td style='text-align: right; margin-left: auto;'><button class='btn btn-info' onclick='createMessage(\"" + userId + "\")'>Send message</button></td>";
+      formHtml += "</tr>";
+      formHtml += "</table>";
+      $("#send-message-body").html(formHtml);
+   }
+
+   function createMessage(user) {
+       var target = user;
+       var message = $("#messageText").val();
+       if (message.length <3) {
+           window.alert("Too short message");
+       } else {
+       console.info("Sending message to: " + target);
+           sendMessage(message, target);
+       }
+   }
+   /* Created 28/06/2021 */
+
+   function sendMessage(message, target) {
+
+       if (target == "everyone") {
+       console.info("Sending admin message to group: " + actualRoomName);
+           connection.invoke("SendAdminGroupMessage" ,actualRoomName , message).catch(function (err) {
+            return console.error(err.toString());
+            })
+            closeMessage();
+            closeAdmin();
+       }
+       else {
+           connection.invoke("SendAdminMessageToUser" ,target , message).catch(function (err) {
+            return console.error(err.toString());
+            })
+            closeMessage();
+            closeAdmin();
+       }
+   }
+
+   function closeMessage() {
+      $('#send-message').removeClass('active');
+      openAdmin();
+   }
+
+   function openBanned() {
+      $("#banned").addClass('active');
+   }
+
+   function closeBanned() {
+      $("#banned").removeClass('active');
+   }
+
+   function leaveChat() {
+      window.location.href="/";
+   }
+</script>

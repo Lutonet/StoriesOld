@@ -1,0 +1,58 @@
+﻿@page
+@model ExternalLoginsModel
+@{
+   ViewData["Title"] = "Manage your external logins";
+   ViewData["ActivePage"] = ManageNavPages.ExternalLogins;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+@if (Model.CurrentLogins?.Count > 0)
+{
+   <h3>Registered Logins</h3>
+   <br />
+   <table class="table border-0 border-top-0" style="padding-top: 10px; margin-top: 10px;">
+      <tbody class="border-0 border-top-0">
+         @foreach (var login in Model.CurrentLogins)
+         {
+            <tr>
+               <td align="center" class="border-top-0" id="@($"login-provider-{login.LoginProvider}")"><img src="@($"/img/{login.LoginProvider.ToLower()}.png")" /></td>
+               <td align="center" class="border-top-0">
+                  @if (Model.ShowRemoveButton)
+                  {
+                     <form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
+                        <div class="text-center">
+                           <input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
+                           <input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
+                           <button type="submit" class="btn btn-danger" title="Remove this @login.ProviderDisplayName.ToLower() login from your account">Remove</button>
+                        </div>
+                     </form>
+                  }
+                  else
+                  {
+                     @: &nbsp;
+                  }
+               </td>
+            </tr>
+         }
+      </tbody>
+   </table>
+}
+@if (Model.OtherLogins?.Count > 0)
+{
+   <hr />
+   <h3>Add another service to log in.</h3>
+   <form id="link-login-form" asp-page-handler="LinkLogin" method="post" class="form-horizontal">
+      <div id="socialLoginList" style="margin-top: 10px;" align="center">
+         <br />
+         <p class="text-center">
+            @foreach (var provider in Model.OtherLogins)
+            {
+               <button id="@($"link-login-button-{provider.Name}")" type="submit" class="btn" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><img src="/img/@($"{provider.Name}.png")" /></button>
+            }
+         </p>
+      </div>
+   </form>
+}
+<script>
+   noLeft();
+</script>

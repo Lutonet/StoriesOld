@@ -1,0 +1,382 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+html {
+    font-size: 12px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 12px;
+    }
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background-repeat: no-repeat;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+.navbar {
+    min-height: 50px;
+}
+
+.nav-link {
+    vertical-align: middle;
+    font-size: small;
+}
+
+    .nav-link:active {
+        font-weight: bold;
+    }
+
+.nav-item {
+    font-weight: bold;
+}
+
+.highlighted {
+    color: red;
+    vertical-align: text-top;
+}
+
+.left {
+    border-style: none;
+    border-radius: 7px;
+    margin-top: 10px;
+    font-size: 13px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 50px;
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 20px;
+}
+
+label {
+    font-weight: 100;
+}
+
+.body {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 7px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    font-size: 13px;
+    margin-bottom: 50px;
+    padding-top: 10px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 20px;
+}
+
+.input-group-text {
+    border: 1px, solid;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right: 0px;
+}
+
+hr.thin {
+    border: 0;
+    border-bottom: 1px solid;
+}
+
+h1 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+h2 {
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+h3 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+h4 {
+    text-align: center;
+    font-size: 13px;
+}
+
+h5 {
+    text-align: center;
+    font-size: 12px;
+}
+
+h6 {
+    text-align: center;
+    font-size: 11px;
+}
+
+.info {
+    border-radius: 5px;
+    border: solid 1px;
+    margin-top: 32px;
+    margin-left: 15px;
+    padding: 10px;
+    display: none;
+}
+
+.typing-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 42px;
+    margin-left: 8px;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    40% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.input-cursor {
+    animation: blink .6s linear infinite alternate;
+}
+
+.datepicker-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+    .datepicker-input::-webkit-calendar-picker-indicator {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+    }
+
+.datepicker-toggle-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.croppie-container {
+    width: 100%;
+    height: 80%;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 18px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #8ebf42;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.chatInput {
+    flex-direction: column;
+    display: flex;
+    height: 75px;
+}
+
+.chatWindow {
+    flex-grow: 1;
+    display: flex;
+}
+
+.chatBody {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.chatMessages {
+    background-color: red;
+    flex-grow: 1;
+}
+
+.main {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.side-menu {
+    z-index: 50;
+    box-shadow: 1px 0 2px 0 #888;
+    display: flex;
+    flex-direction: column;
+    border: 0px;
+    width: 150px;
+}
+
+.navbar {
+    z-index: 100;
+    box-shadow: 0 1px 2px 0 #666;
+}
+
+.room-button {
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    padding: 3px 5px 3px 5px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    min-height: 100vh;
+    min-width: 100vw;
+    z-index: 200;
+    top: 0;
+    left: 0;
+    background-color: rgba(0.2, 0.2, 0.2, 0.8);
+}
+
+    .modal.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+.modal-body {
+    min-width: 300px;
+    max-width: 300px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    flex: none;
+    border-radius: 8px;
+    border: solid 1px;
+}
+
+    .modal-body > * {
+        margin-top: 0.5rem;
+    }
+
+    .modal-body > header {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .modal-body > div > input {
+        width: 100%;
+    }
+
+    .modal-body > .close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        margin-top: 0;
+        padding-top: 0;
+        margin-right: 0;
+        padding-right: 0;
+        float: right;
+    }
+
+    .modal-body > footer {
+        text-align: center;
+    }
+
+input.sortable {
+    height: 2.5em;
+    font-size: 15px;
+    padding: 5px;
+    align-items: center;
+    align-content: center;
+    width: 300px;
+    border-left: 0px;
+    margin-left: 0px;
+    border-color: rgba(128, 128, 128, 0.3);
+    border-style: dashed;
+}
+
+.sortable {
+    height: 2.5em;
+    font-size: 15px;
+    padding: 5px;
+    margin-right: 0px;
+    align-items: center;
+    align-content: center;
+    border-color: rgba(128, 128, 128, 0.3);
+    border-style: dashed;
+}
+
+.drag {
+    background-color: rgba(0,0,128,0.2);
+    font-weight: bold;
+}

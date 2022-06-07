@@ -1,0 +1,395 @@
+﻿@page
+@model IndexModel
+
+@{
+   ViewData["Title"] = "Home page";
+}
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="/js/index.js"></script>
+<script src="/js/readmore.js"></script>
+@if (!Model._signInManager.IsSignedIn(User))
+{
+   <div class="text-center">
+      <h1 class="display-4">Welcome at stories</h1>
+      <p><b><u><a href="/My/Register/">Register yourself </a></u></b>and start to publish your STORIES. </p>
+      <p>
+         Share with others your novels, stories, poetry, ideas or opinions. Meet with like minded people. Meet with critics and get their opinions and advices. For free, as internet should be. <br />
+         Feel at home, be kind and respectful to make others feel at home too. Be polite and expect the same back.
+      </p>
+      <p>
+         <b>Have fun!</b>
+      </p>
+      <hr style='width:95%; margin-left: auto; margin-right: auto;' />
+   </div>
+}
+@if (Model._signInManager.IsSignedIn(User))
+{
+   <a href="/My/NewArticle" class="btn btn-primary">Add new Article:</a>
+
+}
+@if (Model.ArticleExists == true)
+{
+<h2>Last published:</h2>
+        <div id="newArticles"  style="margin-top: 10px;">
+
+        </div>
+ 
+
+<hr />
+<div style="width: 90%; margin-left: auto; margin-right: auto;">
+   <h2 style="margin-top: 10px;">Last published article: </h2>
+   <div>
+      <span class="redactor"><a href="/Articles/CategoryGroups?id=@Model.CategoryGroup.Id"><i>@Model.CategoryGroup.GroupName</i></a></span> |
+      <span class="admin"><a href="/Articles/Categories?id=@Model.LatestArticle.CategoryId"><i class="administrator"> @Model.LatestArticle.CategoryName</i></a></span> |
+      <span class="success"><b><i class="fas fa-eye"></i> (@Model.LatestArticle.ReadCount)</b></span>
+   </div>
+
+   <h1>@Model.LatestArticle.Title</h1>
+   <h3 style="font-size:14px;" class="my"><i>By: @Model.LatestArticle.AuthorName</i></h3>
+   <hr />
+   <article style="overflow:hidden; margin-bottom: 16px;">
+
+      <div>
+         @if (Model.LatestArticle.displayProlog)
+         {
+            <p style="font-size:small"><i>Prologue:</i></p>
+            @Html.Raw(Model.LatestArticle.Prolog)
+            <hr />
+         }
+         <div>
+            @Html.Raw(Model.LatestArticle.ArticleBody)
+         </div>
+         <hr />
+         @if (Model.LatestArticle.displayEpilog)
+         {
+            <p style="font-size: small"><i>Epilogue:</i></p>
+            @Html.Raw(Model.LatestArticle.Epilog)
+            <hr />
+         }
+      </div>
+      <div class="row">
+         <div class="col-3">
+            <!-- Likes -->
+            @if (Model.hasActualLikedArticle)
+            {
+               <span style="font-size: 16px; color: green;"><a href="#" onclick="like('@Model.LatestArticle.ArticleId')"><i class="far fa-thumbs-up"></i> @Model.LatestArticle.LikesCount</a></span>
+            }
+            @if (Model.viewerIsAuthor)
+            {
+               <span style="font-size: 16px; color: green;"><a href="#"><i class="far fa-thumbs-up"></i> @Model.LatestArticle.LikesCount</a></span>
+            }
+            @if (!Model.viewerIsAuthor && !Model.hasActualLikedArticle)
+            {
+               <span style="font-size: 16px;"><a href="#" onclick="like('@Model.LatestArticle.ArticleId')"><i class="far fa-thumbs-up"></i> @Model.LatestArticle.LikesCount</a></span>
+            }
+         </div>
+         <div class="col-6" style="margin-left:auto; margin-right: auto; font-size: 16px; text-align: center;">
+            <!-- Stars -->
+            @for (int i = 1; i < 6; i++)
+            {
+               if (i <= Model.LatestArticle.AverageStars)
+               {
+                  <span style="color: gold;"><i class="fas fa-star"></i></span>
+                  if (!Model.viewerIsAuthor)
+                  {
+                     <span style="color: gold;"><i class="fas fa-star"></i></span>
+                  }
+                  else
+                  {
+                     <span style="color: gold;"><i class="fas fa-star"></i></span>
+                  }
+               }
+               else
+               {
+                  if (!Model.viewerIsAuthor)
+                  {
+                     <span style="color: grey;"><i class="fas fa-star"></i></span>
+                  }
+                  else
+                  {
+                     <span style="color: grey;"><i class="fas fa-star"></i></span>
+                  }
+               }
+
+            }
+            <br />From @Model.StarsGivers authors
+         </div>
+      </div>
+   </article>
+</div>
+
+
+<hr />
+<h2>Most readed:</h2>
+
+<div id="popularArticles" style="margin-top: 10px;">
+</div>
+<hr />
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+    
+
+<script>
+   $(document).ready(function () {
+       newArticles.redraw();
+       popularArticles.redraw();
+   });
+   $('article').readmore({
+      speed: 400,
+      collapsedHeight: 330,
+      embedCss: true,
+      moreLink: '<a href="#" onclick="markReaded(@Model.LatestArticle.ArticleId)"><span style="font-size: 16px;" class="success"><i class="fas fa-chevron-down"></i></span></a>',
+      lessLink: '<a href="#"><span style="font-size: 16px;" class="error"><i class="fas fa-chevron-up"></i></span></a>',
+      heightMargin: 16,
+
+   });
+
+   var newArticleData = '@Html.Raw(Model.jsonNew)';
+   console.info(newArticleData);
+   var newArticleTable = JSON.parse(newArticleData);
+
+   var newArticles = new Tabulator("#newArticles", {
+      index: "ArticleId",
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      movableRows: true,
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 7,
+      data: newArticleTable,
+      autoColumns: false,
+      initialSort: [
+         { column: "Published", dir: "desc" },
+      ],
+      columns: [
+         { title: "Article Id", field: "ArticleId" },
+         { title: "User Id", field: "AuthorId" },
+         { title: "Category Id", field: "CategoryId" },
+         {
+            title: "Title",
+            field: "Title",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+         },
+         {
+            title: "Author",
+            field: "AuthorName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var authorId = row.getCell("AuthorId").getValue();
+               window.location = "/My/Index?id=" + authorId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Published",
+            field: "Published",
+            width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+         },
+         {
+            title: "Category",
+            field: "CategoryName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryId = row.getCell("CategoryId").getValue();
+               window.location = "/Articles/Categories?id=" + categoryId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Read by",
+            field: "ReadCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-eye'></i>";
+            }
+         },
+         {
+            title: "Likes",
+            field: "LikesCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-thumbs-up'></i>";
+            }
+         },
+         {
+            title: "Critics",
+            field: "CriticsCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-comments'></i>";
+            }
+         },
+         {
+            title: "Rating",
+            field: "rating",
+            formatter: "star",
+            formatterParams: { stars: 5 }, hozAlign: "center", width: 100,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-star'></i>";
+            }
+         },
+      ],
+   });
+
+   newArticles.hideColumn("ArticleId");
+   newArticles.hideColumn("AuthorId");
+   newArticles.hideColumn("CategoryId");
+
+   var popularArticleData = '@Html.Raw(Model.jsonPopular)';
+   console.info(popularArticleData);
+   var newArticleTable = JSON.parse(popularArticleData);
+
+   var popularArticles = new Tabulator("#popularArticles", {
+      index: "ArticleId",
+      layout: "fitColumns",
+      responsiveLayout: "hide",
+      maxHeight: "100%",
+      minHeight: 24,
+      tooltips: false,
+      addRowPos: "top",
+      pagination: "local",
+      paginationSize: 10,
+      data: newArticleTable,
+      autoColumns: false,
+      initialSort: [
+         { column: "ReadCount", dir: "desc" },
+      ],
+      columns: [
+         { title: "Article Id", field: "ArticleId" },
+         { title: "User Id", field: "AuthorId" },
+         { title: "Category Id", field: "CategoryId" },
+         {
+            title: "Title",
+            field: "Title",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+         },
+         {
+            title: "Author",
+            field: "AuthorName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var authorId = row.getCell("AuthorId").getValue();
+               window.location = "/My/Index?id=" + authorId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Published",
+            field: "Published",
+            width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+         },
+         {
+            title: "Category",
+            field: "CategoryName",
+            width: 150,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var categoryId = row.getCell("CategoryId").getValue();
+               window.location = "/Articles/Categories?id=" + categoryId;
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            }
+         },
+         {
+            title: "Read by",
+            field: "ReadCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-eye'></i>";
+            }
+         },
+         {
+            title: "Likes",
+            field: "LikesCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-thumbs-up'></i>";
+            }
+         },
+         {
+            title: "Critics",
+            field: "CriticsCount",
+            width: 50,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-comments'></i>";
+            }
+         },
+         {
+            title: "Rating",
+            field: "rating",
+            formatter: "star",
+            formatterParams: { stars: 5 }, hozAlign: "center", width: 100,
+            titleFormatter: function (title, titleFormatterParams, onRendered) {
+               return "<i class='far fa-star'></i>";
+            }
+         },
+      ],
+   });
+
+   popularArticles.hideColumn("ArticleId");
+   popularArticles.hideColumn("AuthorId");
+   popularArticles.hideColumn("CategoryId");
+   </script>
+   }

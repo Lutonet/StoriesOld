@@ -1,0 +1,218 @@
+﻿@page
+@model Stories.Pages.My.IndexModel
+@{
+}
+
+<h1>Welcome home @Model.ActualUser.DisplayedName</h1>
+<hr />
+<h3>Concepts:</h3>
+
+@if (Model.jsonConcepts == "")
+{
+   <div class="text-center">
+      <b> Nothing To display here</b>
+      <hr />
+   </div>
+
+}
+@if (@Model.jsonConcepts != "")
+{
+   <div class="row">
+      <div class="col-10 offset-1 p-0" id="conceptsTable">
+      </div>
+   </div>
+   <hr />
+}
+
+<h3>Articles you published:</h3>
+
+@if (Model.jsonArticles == "")
+{
+   <div class="text-center">
+      <b> Nothing To display here</b>
+      <hr />
+   </div>
+
+}
+@if (@Model.jsonArticles != "")
+{
+   <div class="row">
+      <div class="col-10 offset-1 p-0" id="articlesTable">
+      </div>
+   </div>
+   <hr />
+}
+<a href="/My/Collections"><h3>Your collections</h3></a>
+<p style="text-align: center">
+   Use collections to put together your related articles. It is upto you - you can create whole book as a collection,
+   you can put chapters into novel, or make poetry collection.
+</p>
+
+<script src="~/lib/tabulator/js/tabulator.min.js"></script>
+
+
+<script>
+
+// Definition of Tabulator tables
+var data = '@Model.jsonConcepts';
+if (data != "") {
+ data = JSON.parse('@Html.Raw(Model.jsonConcepts)');
+}
+
+var conceptTable = new Tabulator("#conceptsTable", {
+    index: "ArticleId",
+    movableRows: true,
+    layout: "fitColumns",
+    responsiveLayout: "hide",
+    tooltips: false,
+    data: data,
+    addRowPos: "top",
+    pagination: "local",
+    paginationSize: 10,
+    initialSort: [
+        { column: "Written", dir: "desc" },
+    ],
+    columns: [
+        {
+            title: "Title",
+            field: "Title",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+        },
+        { title: "Style", field: "CategoryGroupName", width: 140},
+        { title: "Category", field: "CategoryName", width: 140 },
+        {
+            title: "Written", field: "Written",
+             width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+        },
+        {
+
+            title: "Likes", field: "LikesCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+             return "<i class='fa fa-thumbs-up'></i>";
+            }
+
+        },
+        { title: "Stars", field:"rating",  formatter:"star", hozAlign:"center", width: 100},
+        {
+            title: "Critics", field: "CriticsCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+                return "<i class='fas fa-comment-dots'></i>";
+            }
+        },
+        {
+           title: "Edit", field: "linkEdit", formatter: "link", headerSort: false, formatterParams: {
+               label: "Edit",
+           }
+        },
+    ]
+
+});
+var data = '@Model.jsonArticles';
+if (data != ""){
+ data = JSON.parse('@Html.Raw(Model.jsonArticles)');
+ }
+
+var articleTable = new Tabulator("#articlesTable", {
+    index: "ArticleId",
+    movableRows: true,
+    layout: "fitColumns",
+    responsiveLayout: "hide",
+    tooltips: false,
+    data: data,
+    addRowPos: "top",
+    pagination: "local",
+    paginationSize: 10,
+    initialSort: [
+        { column: "Written", dir: "desc" },
+    ],
+    columns: [
+        {
+            title: "Title",
+            field: "ArticleTitle",
+            widthGrow: 5,
+            cellClick: function (e, cell) {
+               var row = cell.getRow();
+               var rowIndex = row.getIndex();
+               window.location = "/Articles/Read?id=" + rowIndex;
+
+            },
+            formatter: function (cell, formatterParams, onRendered) {
+               //cell - the cell component
+               //formatterParams - parameters set for the column
+               //onRendered - function to call when the formatter has been rendered
+
+               return '<a href="#"><b>' + cell.getValue() + '</b></a>';
+            },
+        },
+        { title: "Style", field: "CategoryGroupName", width: 140 },
+        { title: "Category", field: "CategoryName", width: 140 },
+        {
+            title: "Written", field: "Written",
+             width: 140,
+            formatter: function (cell, formatterParams, onRendered) {
+               var d = new Date(cell.getValue());
+               var offset = new Date().getTimezoneOffset();
+               d.setMinutes(d.getMinutes() - offset);
+               var formated = ("0" + d.getDate()).slice(-2) + "/"
+                  + ("0" + (d.getMonth() + 1)).slice(-2) + "/"
+                  + d.getFullYear() + " "
+                  + ("0" + d.getHours()).slice(-2)
+                  + ":" + ("0" + d.getMinutes()).slice(-2)
+                  + ":" + ("0" + d.getSeconds()).slice(-2);
+
+               return formated;
+            }
+        },
+        {
+
+            title: "Likes", field: "LikesCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+             return "<i class='fa fa-thumbs-up'></i>";
+            }
+
+        },
+        { title: "Stars", field:"rating",  formatter:"star", hozAlign:"center", width: 100 },
+        {
+            title: "Critics", field: "CriticsCount", titleFormatter: function (title, titleFormatterParams, onRendered) {
+                return "<i class='fas fa-comment-dots'></i>";
+            }
+        },
+        {
+           title: "Edit", field: "linkEdit", formatter: "link", headerSort: false, formatterParams: {
+               label: "Edit",
+           }
+        },
+    ]
+
+});
+
+/*   Signal R Functions   */
+function interactWithArticle(id) {
+    window.alert (id);
+}
+
+
+</script>

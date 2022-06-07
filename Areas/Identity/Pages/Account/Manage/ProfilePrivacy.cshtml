@@ -1,0 +1,127 @@
+﻿@page
+@model Stories.Areas.Identity.Pages.Account.Manage.ProfilePrivacy
+@{
+}
+@{
+   ViewData["Title"] = "Profile Privacy";
+   ViewData["ActivePage"] = ManageNavPages.ProfilePrivacy;
+}
+
+<h3>Profile Privacy</h3>
+<hr />
+<form method="post">
+   <div class="row">
+      <div class="col-md-6 bordered-right">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <input type="hidden" asp-for="ProfilePrivacyModel.Id" value="@Model.ProfilePrivacyModel.Id" />
+         <input type="hidden" asp-for="ProfilePrivacyModel.UserId" value="@Model.ProfilePrivacyModel.UserId" />
+         <div class="form-group">
+            <label class="control-label">Pseudonym: </label>
+            <input type="text" disabled value="@Model.DisplayedName" class="form-control" />
+            <span asp-validation-for="ProfilePrivacyModel.UserId" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.EmailPrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.EmailPrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.EmailPrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.NamePrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.NamePrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.NamePrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.FrindsPrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.FrindsPrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.FrindsPrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.PhonePrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.PhonePrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.PhonePrivacy" class="text-danger"></span>
+         </div>
+      </div>
+      <div class="col-md-6">
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.SocialMediaLinksPrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.SocialMediaLinksPrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.SocialMediaLinksPrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.CountryPrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.CountryPrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.CountryPrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.BirthDatePrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.BirthDatePrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.BirthDatePrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.PictureFilePrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.PictureFilePrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.PictureFilePrivacy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="ProfilePrivacyModel.LastSeenPrivacy" class="control-label"></label>
+            <select asp-for="ProfilePrivacyModel.LastSeenPrivacy" class="form-control">
+               <option value="@Stories.Tools.Settings.AccessRights.Public">Public</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Registered">Registered users</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Friends">Friends</option>
+               <option value="@Stories.Tools.Settings.AccessRights.Private">Private</option>
+            </select>
+            <span asp-validation-for="ProfilePrivacyModel.LastSeenPrivacy" class="text-danger"></span>
+         </div>
+      </div>
+   </div>
+   <hr />
+   <div class="container-fluid text-right form-group">
+      <input type="submit" value="Save" class="btn btn-primary" />
+   </div>
+</form>
+<script>
+   noLeft();
+</script>
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

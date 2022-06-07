@@ -1,0 +1,124 @@
+﻿@page
+@model IndexModel
+@{
+   ViewData["Title"] = "Profile";
+   ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<hr />
+<form id="profile-form" method="post">
+   <div class="row">
+      <div class="col-md-6 bordered-right">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="form-group">
+            <label>Email Address</label>
+            <input asp-for="Username" class="form-control" disabled />
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.PhoneNumber"></label>
+            <input asp-for="Input.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.FirstName"></label>
+            <input asp-for="Input.FirstName" class="form-control" />
+            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.LastName"></label>
+            <input asp-for="Input.LastName" class="form-control" />
+            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.DisplayedName"></label>
+            <input asp-for="Input.DisplayedName" class="form-control" />
+            <span asp-validation-for="Input.DisplayedName" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.Gender"></label>
+            <select asp-for="Input.Gender" class="form-control">
+               <option value="Female">Female</option>
+               <option value="Male">Male</option>
+               <option value="Other">Other</option>
+            </select>
+            <span asp-validation-for="Input.Gender" class="text-danger"></span>
+         </div>
+      </div>
+      <div class="col-md-6">
+
+         <div class="form-group">
+            <label asp-for="Input.BirthDate"></label>
+            <input type="text" asp-for="Input.BirthDate" id="Input_BirthDate" class="form-control" />
+            <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.CountryId">Country</label>
+            <select asp-for="Input.CountryId" class="form-control">
+               @{
+                  <option class="optionText" value="-">Select the country</option>
+                  <option></option>
+                  try
+                  {
+                     foreach (var country in Model.Countries)
+                     {
+                        <option class="optionText" value="@country.Id">@country.CountryName</option>
+                     }
+                  }
+                  catch (Exception ex)
+                  {
+                     Console.WriteLine("Error", ex);
+                  }
+
+               }
+            </select>
+            <span asp-validation-for="Input.CountryId" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.Facebook"></label>
+            <input asp-for="Input.Facebook" class="form-control" />
+            <span asp-validation-for="Input.Facebook" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.Twitter"></label>
+            <input asp-for="Input.Twitter" class="form-control" />
+            <span asp-validation-for="Input.Twitter" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.Google"></label>
+            <input asp-for="Input.Google" class="form-control" />
+            <span asp-validation-for="Input.Google" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Input.Microsoft"></label>
+            <input asp-for="Input.Microsoft" class="form-control" />
+            <span asp-validation-for="Input.Microsoft" class="text-danger"></span>
+         </div>
+      </div>
+   </div>
+   <hr />
+   <div class="container-fluid text-right form-group">
+      <button id="update-profile-button" type="submit" class="btn btn-dark">Save</button>
+   </div>
+</form>
+<script>
+
+   noLeft();
+
+   $(function () {
+      $("#Input_BirthDate").datepicker({
+         todayBtn: "linked",
+         autoclose: true,
+         todayHighlight: true,
+         dateFormat: 'dd/mm/yy',
+         changeMonth: true,
+         changeYear: true,
+         yearRange: "1920:2010"
+      });
+   });
+</script>
+@section Scripts {
+   <partial name="_ValidationScriptsPartial" />
+
+}

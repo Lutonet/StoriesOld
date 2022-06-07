@@ -1,0 +1,99 @@
+﻿@page
+@model Stories.Areas.Identity.Pages.Account.Manage.ProfilePictureModel
+@{
+}
+@{
+   ViewData["Title"] = "Profile Picture";
+   ViewData["ActivePage"] = ManageNavPages.ProfilePicture;
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css" integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js" integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<hr />
+
+<div class="row">
+   <div class="col-md-12 text-center">Edit your picture here:</div>
+</div>
+<div class="row">
+   <div id="main-cropper"></div>
+   <div class="container">
+      <div class="button-wrap">
+         <input id="select" type="file">
+      </div>
+   </div>
+</div>
+<hr />
+<div class="row">
+
+   <div class="offset-8 col-md-4 text-right">
+      <button class="btn btn-primary" id="btnupload" name="btnupload"> Update: </button>
+   </div>
+</div>
+
+<script>
+var v = Math.random();
+$("#left").html("<div class='text-center'><img src='@Model.ImagePath' width='180' height='180'></div>");
+
+    //initialize Croppie
+    var basic = $('#main-cropper').croppie
+    ({
+        viewport: { width: 320, height: 320, type: 'circle' },
+        boundary: { width: 400, height: 400 },
+        showZoomer: true,
+        showCropper: true,
+        url: '@Model.ImagePath',
+        format:'png'|'jpeg'|'png'|'webp'
+    });
+
+    //Reading the contents of the specified Blob or File
+    function readFile(input) {
+        if (input.files && input.files[0])
+        {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+             $('#main-cropper').croppie('bind', {
+                    url: e.target.result
+                });
+            
+
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+     $('#btnupload').on('click', function ()
+    {
+        basic.croppie('result', 'blob').then(function (blob)
+        {
+            var formData = new FormData();
+            formData.append('__RequestVerificationToken', $('[name=__RequestVerificationToken]').val());
+            formData.append('filename', 'FileName.png');
+            formData.append('blob', blob);
+            var myAppUrlSettings =
+            {
+                MyUsefulUrl: '@Model.RelativePath'
+            }
+            var request = new XMLHttpRequest();
+            request.open('POST', myAppUrlSettings.MyUsefulUrl);
+            request.send(formData);
+            request.onreadystatechange = function () {
+               // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200)
+                {
+
+                    window.location.reload();
+                    
+                }
+            }
+        });
+    });
+
+   // Change Event to Read file content from File input
+    $('#select').on('change', function () { readFile(this); });
+</script>
+@section Scripts {
+   <partial name="_ValidationScriptsPartial" />
+
+}

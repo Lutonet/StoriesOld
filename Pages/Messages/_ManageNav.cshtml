@@ -1,0 +1,12 @@
+﻿@*
+   For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<ul class="nav nav-pills flex-column bordered-right">
+   <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="index" asp-page="./Index">Unread  (<span class="unreadCount"></span>)</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.InboxNavClass(ViewContext)" id="inbox" asp-page="./Inbox"> Inbox (<span class="allMessagesCount"></span>)</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.ComposeNavClass(ViewContext)" id="compose" asp-page="./Compose">Compose</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.DeletedNavClass(ViewContext)" id="deleted" asp-page="./Deleted">Deleted (<span class="deletedCount"></span>)</a></li>
+   <li class="nav-item"><a class="nav-link @ManageNavPages.SentNavClass(ViewContext)" id="sent" asp-page="./Sent">Sent Items</a></li>
+</ul>

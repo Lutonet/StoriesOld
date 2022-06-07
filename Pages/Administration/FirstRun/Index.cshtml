@@ -1,0 +1,131 @@
+﻿@page
+@model Stories.Pages.Administration.FirstRun.IndexModel
+@{
+   ViewData["Title"] = "First Run";
+}
+
+<div class="text-center">
+   <h1>First Run</h1>
+   <hr />
+</div>
+<div align="left">
+   <div class="row">
+      <div class="col-8 bordered-right">
+         <div align="center">
+            <h3>Administrator setup</h3>
+            <hr />
+            <br />
+         </div>
+         <form id="formCreate" name="formCreate" action="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="All" class="text-danger" id="validation">
+            </div>
+            <div class="form-group">
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-envelope-square"></i>&nbsp;
+                     <label>Email</label>
+                     <span asp-validation-for="Input.Email" class="text-danger"></span>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <input asp-for="Input.Email" class="form-control" onclick="LoadInfo('LoginEmailAddress')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <i class="fas fa-key"></i>&nbsp;
+                     <label>Password</label>
+                     <span asp-validation-for="Input.Password" class="text-danger"></span>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <input asp-for="Input.Password" class="form-control" onclick="LoadInfo('Password')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-key"></i>&nbsp;
+                     <label>Confirm Password</label>
+                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <input asp-for="Input.ConfirmPassword" class="form-control" onclick="LoadInfo('ConfirmPassword')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-globe"></i>&nbsp;
+                     <label>Country</label>
+                     <span asp-validation-for="Input.CountryId" class="text-danger"></span>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <select name="Input_CountryId" class="form-control" onchange="getPrefix(this.value)" onclick="LoadInfo('Country')">
+                        @{
+                           <option class="optionText" value="-">Select the country</option>
+                           <option></option>
+                           foreach (var country in Model.Countries)
+                           {
+                              <option class="optionText" value="@country.Id">@country.CountryName</option>
+                           }
+                        }
+                     </select>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <i class="fas fa-phone"></i>&nbsp;
+                     <label>Phone number</label>
+                     <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <div class="input-group m-0 p-0">
+                        <span class="input-group-text form-span" id="Prefix">+</span>
+                        <input asp-for="Input.PhoneNumber" class="form-control" onclick="LoadInfo('Phone')" />
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <hr class="thin" />
+               </div>
+               <div class="row">
+                  <div class="col-6" style="margin-bottom:5px; margin-top: 3px;">
+                  </div>
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <button type="reset" class="btn btn-danger">Reset</button>
+                  </div>
+                  <div class="col-2 text-right" style="margin-bottom:5px; margin-top: 3px;">
+                     <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+               </div>
+            </div>
+         </form>
+      </div>
+      <div class="col-4">
+         <div id="info" class="info"></div>
+      </div>
+   </div>
+</div>
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script>
+$(document).ready(function () {
+    var source = '@IndexModel.Report';
+    var html = '<h3 class="header">Installation reports:</h3><ul>\n';
+    source.split('##').forEach(item => {
+        var i = 0
+        item.split('#').forEach(record =>
+        {
+            if (i == 0) {
+                textRecord = record;
+                i = 1;
+            } else {
+                classRecord = record;
+            }
+        });
+        html +='<li class="'+classRecord+'" >'+ textRecord +'</li>';
+    });
+
+    html +='</ul>';
+    $("#left").html(html);
+})
+</script>

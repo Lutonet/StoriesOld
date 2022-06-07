@@ -1,0 +1,204 @@
+﻿@page
+@model Stories.Pages.My.RegisterModel
+@{
+}
+<div class="text-center">
+   <h1>New Author Registration</h1>
+   <hr />
+</div>
+<div align="left">
+
+   <div class="row">
+      <div class="col-8 bordered-right">
+         <div align="center">
+            <h3>Account setup</h3>
+            <hr />
+            <br />
+         </div>
+         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="All" class="text-danger" id="validation">
+            </div>
+            <div class="text-danger" id="temp">
+            </div>
+            <div class="text-danger" id="temp1">
+            </div>
+            <div class="form-group">
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-ghost"></i>&nbsp;
+                     <label>Displayed name:</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.DisplayedName" id="nameError" class="text-danger"></span>
+                     <input asp-for="Input.DisplayedName" class="form-control" onclick="LoadInfo('DisplayedName')" onkeyup="checkDisplayedName(this.value)" onchange="checkDisplayedName(this.value)" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-arrow-circle-right"></i>&nbsp;
+                     <label>First Name</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                     <input asp-for="Input.FirstName" class="form-control" onclick="LoadInfo('FirstName')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-arrow-alt-circle-right"></i>&nbsp;
+                     <label>Last Name</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                     <input asp-for="Input.LastName" class="form-control" onclick="LoadInfo('LastName')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-envelope-square"></i>&nbsp;
+                     <label>Email</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.Email" class="text-danger" mailError"></span>
+                     <input asp-for="Input.Email" class="form-control" onclick="LoadInfo('LoginEmailAddress')" onchange="checkEmail(this.value)" onkeyup="checkEmail(this.value)" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-venus-mars"></i>&nbsp;
+                     <label>Gender</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                     <select asp-for="Input.Gender" class="form-control" onclick="LoadInfo('Gender')">
+                        <option class="optionText" value="Female">Female</option>
+                        <option class="optionText" value="Male">Male</option>
+                        <option class="optionText" value="Other">Other</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-birthday-cake"></i>&nbsp;
+                     <label>Birth date</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                     <input asp-for="Input.BirthDate" type="text" class="form-control" onclick="LoadInfo('BirthDate')" id="Input_BirthDate" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <i class="fas fa-key"></i>&nbsp;
+                     <label>Password</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.Password" class="text-danger"></span>
+                     <input asp-for="Input.Password" class="form-control" onclick="LoadInfo('Password')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-key"></i>&nbsp;
+                     <label>Confirm Password</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                     <input asp-for="Input.ConfirmPassword" class="form-control" onclick="LoadInfo('ConfirmPassword')" />
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+
+                     <i class="fas fa-globe"></i>&nbsp;
+                     <label>Country</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.CountryId" class="text-danger"></span>
+                     <select asp-for="Input.CountryId" class="form-control" onchange="getPrefix(this.value)" onclick="LoadInfo('Country')">
+                        @{
+                           <option class="optionText" value="-">Select the country</option>
+                           <option></option>
+                           try
+                           {
+                              foreach (var country in Model.Countries)
+                              {
+                                 <option class="optionText" value="@country.Id">@country.CountryName</option>
+                              }
+                           }
+                           catch (Exception ex)
+                           {
+                              Console.WriteLine("Error", ex);
+                           }
+
+                        }
+                     </select>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <i class="fas fa-phone"></i>&nbsp;
+                     <label>Phone number</label>
+                  </div>
+                  <div class="col-8" style="margin-bottom: 5px;">
+                     <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                     <div class="input-group m-0 p-0">
+                        <span class="input-group-text form-span" id="Prefix">+</span>
+                        <input asp-for="Input.PhoneNumber" class="form-control" onclick="LoadInfo('Phone')" />
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <hr class="thin" />
+               </div>
+               <div class="row">
+                  <div class="col-6" style="margin-bottom:5px; margin-top: 3px;">
+                  </div>
+                  <div class="col-4" style="margin-bottom:5px; margin-top: 3px;">
+                     <button type="reset" class="btn btn-danger">Reset</button>
+                  </div>
+                  <div class="col-2 text-right" style="margin-bottom:5px; margin-top: 3px;">
+                     <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+               </div>
+            </div>
+         </form>
+      </div>
+      <div class="col-4">
+         <div id="info" class="info"></div>
+      </div>
+   </div>
+</div>
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+<script>
+   let dataForLeft = "<h3> The World of stories</h3></br>#success##";
+   dataForLeft += "<hr>";
+   dataForLeft += "Warmly welcome at the # ##";
+   dataForLeft += "STORIES<br><br>#success##";
+   dataForLeft += "Here you can realize your dreams of writing.<br><br>No matter if you want to write famous novel, or just# ##";
+   dataForLeft += "share old local legend# ##";
+   dataForLeft += "Stories#success##";
+   dataForLeft += "is here for you!<br><br># ##";
+
+   dataForLeft += "JUST REGISTER AND ENJOY!#error text-bold text-centered##";
+   typeWrite(dataForLeft, "left", true, 100);
+
+   $(function () {
+      $("#Input_BirthDate").datepicker({
+         todayBtn: "linked",
+         autoclose: true,
+         todayHighlight: true,
+         dateFormat: 'dd/mm/yy',
+         changeMonth: true,
+         changeYear: true,
+         yearRange: "1920:2018"
+      });
+   });
+</script>

@@ -1,0 +1,228 @@
+﻿:root {
+    --jd-color-background-default: #e2e2e2;
+    --jd-color-border: #b22222;
+    --jd-color-panel: #e2e2e2;
+    --jd-color-icon: #880000;
+}
+
+a {
+    color: #44371c;
+}
+
+    a:hover {
+        color: firebrick;
+        text-decoration: none;
+    }
+
+.btn-primary {
+    color: #fff;
+    background-color: #977e51;
+    border-color: black;
+}
+
+    .btn-primary:hover {
+        color: white;
+        border-color: black;
+        background-color: firebrick;
+    }
+
+.btn:hover {
+    background-color: firebrick;
+}
+
+.btn-primary:active {
+    color: white;
+    border-color: black;
+    background-color: firebrick;
+}
+
+.btn-danger {
+    border-color: black;
+    background-color: #44371c;
+}
+
+    .btn-danger:hover {
+        background-color: firebrick;
+    }
+
+.btn-danter:active {
+    background-color: firebrick;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #44371c;
+    border-color: #1861ac;
+}
+
+.border-top {
+    border-top: 1px solid #44371c;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #44371c;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+body {
+    background-color: #977e51;
+    color: #101010;
+}
+
+.navbar {
+    background-color: rgba(200,200,200, 1.0);
+}
+
+.nav-link {
+    color: #44371c;
+}
+
+    .nav-link:active {
+        color: firebrick;
+    }
+
+    .nav-link:hover {
+        color: firebrick;
+    }
+
+    .nav-link:focus {
+        color: firebrick;
+    }
+
+.nav-item {
+    color: #977e51;
+}
+
+.left {
+    background-color: #44371c;
+    color: lightgray;
+    font-family: Consolas;
+    border: solid 1px;
+    border-color: firebrick;
+}
+
+.body {
+    border-color: #44371c;
+    color: #050505;
+    background-color: #E2E2E2;
+}
+
+.form-control {
+    background-color: #977e51;
+    border-color: firebrick;
+    color: white;
+}
+
+    .form-control:disabled {
+        background-color: #44371c;
+        color: gray;
+    }
+
+    .form-control:active {
+        background-color: #44371c;
+        color: white;
+    }
+
+    .form-control:hover {
+        background-color: #44371c;
+        color: white;
+    }
+
+    .form-control:focus {
+        background-color: #44371c;
+        color: white;
+    }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    background-color: #977e51 !important;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: #977e51 !important;
+    color: #CACACA !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+.input-group-text {
+    background-color: #977e51;
+    color: white;
+    border-color: firebrick;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px;
+    border-color: firebrick;
+}
+
+.navbar-toggler-icon {
+    color: darkgray;
+}
+
+icon {
+    color: darkgray;
+}
+
+.info {
+    border-color: firebrick;
+}
+
+.header {
+    color: firebrick;
+}
+
+.true {
+    color: green;
+}
+
+.false {
+    color: red;
+}
+
+.error {
+    color: lightcoral;
+}
+
+.information {
+    color: #cccccc;
+}
+
+.btn-link {
+    color: firebrick;
+}
+
+    .btn-link:hover {
+        color: white;
+    }
+
+.my {
+    color: green;
+}
+
+.moderator {
+    color: #0094ff;
+}
+
+.redactor {
+    color: #1861ac;
+}
+
+.administrator {
+    color: red;
+}
+    .success {
+    color: lawngreen;
+}

@@ -1,0 +1,167 @@
+﻿@{
+   if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
+   {
+      Layout = (string)parentLayout;
+   }
+   else
+   {
+      Layout = "/Pages/Shared/_Layout.cshtml";
+   }
+}
+
+<script>
+
+/* Messaging system Signal R connection */
+
+const Connect = new signalR.HubConnectionBuilder()
+    .withUrl("/messagehub")
+    .configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect([2000, 4000, 6000, 10000, 20000, 30000, 30000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 600000, 600000, 600000, 600000, 600000, 600000])
+    .build();
+
+    Connect.start().then(function () {
+    console.info("Connected to message hub");
+    /* We register all online users so we can make statistics */
+    console.info(actualPage);
+    Connect.invoke("InitializeMailbox", actualPage).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+}).catch(function (err) {
+     return console.error(err.toString());
+});
+
+   Connect.on("fill", (unreadCount, allCount, deletedCount) => {
+      $('.unreadCount').html(unreadCount);
+      $('.allMessagesCount').html(allCount);
+      $('.deletedCount').html(deletedCount);
+      if (actualPage != "compose") {
+
+         messageTable.redraw();
+      }
+      if (actualPage == "index") {
+         if (unreadCount == 0) {
+            $(".unreadMessages").hide(300);
+         }
+      }
+      if (actualPage == "inbox") {
+         if (allCount == 0) {
+            $(".unreadMessages").hide(300);
+         }
+      }
+
+      if (actualPage == "deleted") {
+         if (deletedCount == 0) {
+            $(".unreadMessages").hide(300);
+         }
+      }
+   });
+
+   function ReadMessage(id){
+       Connect.invoke("ReadMessage", id).catch(function (err) {
+           return console.error(err.toString());
+       });
+       Connect.invoke("RefreshNumbers");
+   }
+
+   function DeleteMessage(id) {
+       Connect.invoke("DeleteMessage", id).catch(function (err) {
+          return console.error(err.toString());
+
+       });
+   }
+
+   function CloseMessage() {
+       $("#messageRead").hide(300);
+   }
+
+   function removeUnread() {
+       unreadCount--;
+   }
+
+   Connect.on("messageDeleted", (id) => {
+       messageTable.deleteRow(id);
+      setTimeout(function () {
+         $("#messageRead").hide(300);
+      }, 200)
+      $("#messageRead").hide(300);
+
+       });
+
+   Connect.on("messageToPrint", (jsonMessage) => {
+       Connect.invoke("RefreshNumbers");
+       var message = JSON.parse(jsonMessage);
+       if(actualPage == "index"){
+       messageTable.deleteRow(message.MessageId);
+       messageTable.hideColumn("WasRead");
+       }
+       if(actualPage == "inbox"){
+           console.info(actualPage);
+           console.info (message.MessageId);
+           messageTable.updateData([{MessageId: message.MessageId, WasRead: true}]);
+       }
+       messageTable.hideColumn("MessageId");
+       // #messageRead
+        var d = new Date(message.Sent);
+               var formated = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+       var htmlTmp = "";
+       htmlTmp += "<div class='row' style='font-size: 14px; background-color: rgba(128, 128, 128, 0.2); padding: 5px; margin-left: 10px; margin-right: 10px;'>";
+         htmlTmp += "<div class='col' style='max-width: 120px; min-width: 120px' >";
+         htmlTmp += "<img src='/Images/"+message.SenderId+"/ProfilePhoto_100.png' onerror='this.onerror=null;this.src=\"/Images/anonymous_100.png\" margin: 5px; padding-right: 5px;' />";
+         htmlTmp += "</div>";
+         htmlTmp += "<div class='col' style='padding: 5px; padding-top: 8px;'>";
+         htmlTmp += "From: <b>" + message.SenderName + "</b><br /> Received at: <b>" + formated +"</b> <br /><br />";
+         htmlTmp += "Subject: <b>" + message.Subject + "</b>";
+         htmlTmp += "</div>";
+       htmlTmp += "</div>";
+       htmlTmp += "<hr />";
+       htmlTmp += "<div class='row'>";
+         htmlTmp += "<div style='margin: 5px;' class='col-12'>";
+           htmlTmp += message.Message;
+         htmlTmp += "</div>";
+       htmlTmp += "</div>";
+       htmlTmp += "<hr />";
+       htmlTmp += "<div class='row'>";
+         htmlTmp += "<div class='col-4'><button class='btn btn-primary form-control' onclick='CloseMessage()'>Close</button></div>";
+         if (actualPage !="deleted" && actualPage !="sent") {
+         htmlTmp += "<div class='col-4' style='text-align: center'><button class='btn btn-danger form-control' onclick='DeleteMessage("+message.MessageId+")'>Delete</button></div>";
+         htmlTmp += "<div class='col-4' style='text-align: right'><button class='btn btn-info form-control' onclick='ReplyMessage("+message.MessageId+")'>Reply</button></div>";
+         }
+         if(actualPage == "deleted") {
+              htmlTmp += "<div class='col-4' style='text-align: center'><button class='btn btn-danger form-control' onclick='WipeMessage("+message.MessageRecepientId+")'>Wipe </button></div>";
+         htmlTmp += "<div class='col-4' style='text-align: right'><button class='btn btn-info form-control' onclick='RestoreMessage("+message.MessageRecepientId+")'>Restore</button></div>";
+         }
+         if(actualPage == "sent") {
+              htmlTmp += "<div class='col-4' style='text-align: center'></div>";
+         htmlTmp += "<div class='col-4' style='text-align: right'></div>";
+         }
+         htmlTmp += "</div>";
+       htmlTmp += "<hr />";
+       $("#messageRead").html(htmlTmp);
+       $("#messageRead").show(300);
+
+   });
+
+   function ReplyMessage(id) {
+       window.location ="/Messages/Compose?id=" + id;
+       };
+</script>
+
+@section Scripts {
+   @RenderSection("Scripts", required: false)
+}
+
+<h1>Messenger:</h1>
+
+<div>
+   <hr />
+   <div class="row">
+      <div class="col-md-3">
+         <partial name="_ManageNav" />
+      </div>
+      <div class="col-md-9">
+         @RenderBody()
+      </div>
+   </div>
+</div>

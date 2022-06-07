@@ -1,0 +1,29 @@
+﻿@{
+   if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
+   {
+      Layout = (string)parentLayout;
+   }
+   else
+   {
+      Layout = "/Pages/Shared/_Layout.cshtml";
+   }
+}
+
+
+
+
+
+<h1>Articles:</h1>
+
+<div>
+   <hr />
+   <div class="row">
+      <div class="col-md-2">
+         <partial name="_ManageNav" />
+      </div>
+      <div class="col-md-10">
+         @RenderBody()
+      </div>
+   </div>
+</div>
+@await RenderSectionAsync("Scripts", required: false)

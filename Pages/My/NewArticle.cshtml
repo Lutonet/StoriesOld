@@ -1,0 +1,183 @@
+﻿@page
+@model Stories.Pages.My.NewArticleModel
+@{
+}
+<link rel="stylesheet" href="/css/jodit.min.css" />
+<h3>Write New Article </h3>
+
+<form method="post" onsubmit="fillValues()">
+
+   <div style="width: 80%; margin-right: auto; margin-left: auto;">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <div class="row" style="margin: 5px; align-content: center;">
+         <div class="col-4">Select the type of the article:</div>
+         <div class="col-8">
+            <select class="form-control" onchange="loadCategories(this.value)" id="Input_CategoryGroupId" asp-for="Input.CategoryGroupId">
+               <option class="optionText" value="">-- Select Type of the Article --</option>
+               @foreach (var category in Model.categoryGroups)
+               {
+                  <option class="optionText" value="@category.Id">@category.GroupName</option>
+               }
+            </select>
+         </div>
+      </div>
+      <div class="row" style="margin: 5px; align-content: center;">
+         <div class="col-4">Select the category:</div>
+         <div class="col-8">
+            <select class="form-control" asp-for="Input.CategoryId" id="CategoryId">
+            </select>
+         </div>
+      </div>
+      <div class="row" style="margin: 5px; align-content: center;">
+         <div class="col-4"> Name of the article:</div>
+         <div class="col-8"><input class="form-control" asp-for="Input.ArticleName" /></div>
+      </div>
+   </div>
+   <hr />
+
+   <div class="row">
+      <div class="offset-1 col-md-10">
+         <div class="row" style="margin: 5px;">
+            <div class='col-11'>
+               <h3><b>Prologue:</b> <i>Will be displayed only if not empty</i></h3>
+            </div>
+            <div class='col-1' style="font-size: 16px;" id="link_prolog">
+               <a href="#" class="success" onclick="Expand('prolog')"><i class="fas fa-chevron-down"></i></a>
+            </div>
+         </div>
+         <span id="prolog" style="display: none;">
+
+            <textarea style="height: 250px" id="prologText"></textarea>
+            <input type="hidden" id="Input_Prolog" asp-for="Input.Prolog" />
+         </span>
+      </div>
+   </div>
+   <hr />
+   <div class="row">
+      <div class="offset-1 col-md-10">
+         <h3><b>Article Body:</b></h3>
+         <textarea style="height: 350px" id="articleText"></textarea>
+         <input type="hidden" id="Input_Article" asp-for="Input.Body" />
+      </div>
+   </div>
+   <hr />
+
+   <div class="row">
+      <div class="offset-1 col-md-10">
+         <div class="row">
+            <div class='col-11'>
+               <h3><b>Epilogue: </b><i>Will be displayed only if not empty</i></h3>
+            </div>
+            <div class='col-1' style="font-size: 16px;" id="link_epilog">
+               <a href="#" class="success" onclick="Expand('epilog')"><i class="fas fa-chevron-down"></i></a>
+            </div>
+         </div>
+         <span id="epilog" style="display:none;">
+            <textarea style="height: 250px" id="epilogText"></textarea>
+            <input type="hidden" id="Input_Epilog" asp-for="Input.Epilog" />
+         </span>
+      </div>
+   </div>
+   <hr />
+   <div style="width: 80%; margin-right: auto; margin-left: auto;">
+      <div class="row" style="margin: 5px; align-content: center;">
+         <div class="col-4">Minimal recomended age of readers:</div>
+         <div class="col-8">
+            <select class="form-control" asp-for="Input.AgeRestrictionId">
+
+               @foreach (var category in Model.ageRestriction)
+               {
+                  <option class="optionText" value="@category.Id">@category.AgeFrom  years</option>
+               }
+            </select>
+         </div>
+      </div>
+      <hr />
+      <div class="row" style="margin: 5px; align-content: center;">
+         <div class="col-2 offset-9"><button class="btn btn-info" onclick='Save();'>Save Concept</button></div>
+         <div class="col-1"><button class="btn btn-primary" onclick='Publish();'>Publish</button></div>
+      </div>
+   </div>
+   <input asp-for="Input.Publish" id="Input_Publish" style="display:none;" />
+</form>
+
+<script src="~/js/jodit.min.js"></script>
+
+<script>
+
+noLeft();
+
+
+/*    End of the User tracking */
+
+/* Signal-R Added 02/07/2021 */
+
+function loadCategories(categoryGroupId) {
+    console.info("Loading CategoryGroup: " + categoryGroupId);
+    connection.invoke("LoadCategories", categoryGroupId).catch(function (err) {
+        return console.error(err.toString());
+    })
+}
+
+connection.on("receivedCategories", (jsonResult) => {
+    console.info(jsonResult)
+    // $("#Input_CategoryId")
+
+    var listEncoded = JSON.parse(jsonResult);
+    var countList = listEncoded.length;
+    $("#CategoryId").html("");
+    for (i = 0; i < countList; i++)
+    {
+        console.info("Adding Category ID " + listEncoded[i].Id + " " + listEncoded[i].CategoryName);
+        $("#CategoryId").append("<option class='optionText' value='"+ listEncoded[i].Id +"'>"+ listEncoded[i].CategoryName+"</option>");
+    }
+
+});
+
+var prologue = new Jodit ("#prologText",{
+                        height: 250,
+                        theme: "dark",
+                        toolbarButtonSize: "small",
+                        "buttons": "source,bold,italic,underline,strikethrough,eraser,superscript,subscript,ul,ol,indent,outdent,left,font,fontsize,paragraph,classSpan"
+                         })
+
+var body = new Jodit ("#articleText",{
+                        height: 400,
+                        theme: "dark",
+                        toolbarButtonSize: "small",
+                        "buttons": "source,bold,italic,underline,strikethrough,eraser,superscript,subscript,ul,ol,indent,outdent,left,font,fontsize,paragraph,classSpan"
+                        })
+var epilogue = new Jodit ("#epilogText",{
+                        height: 250,
+                        theme: "dark",
+                        toolbarButtonSize: "small",
+                        "buttons": "source,bold,italic,underline,strikethrough,eraser,superscript,subscript,ul,ol,indent,outdent,left,font,fontsize,paragraph,classSpan"
+                         })
+
+function Collapse(attribute) {
+$("#"+attribute).hide(300);
+$('#link_'+attribute).html('<a class="success" href="#" onclick="Expand(\'' + attribute + '\')"><i class="fas fa-chevron-down"></i></a>');
+}
+
+function Expand(attribute) {
+$("#"+attribute).show(300);
+$('#link_'+attribute).html('<a class="success" href="#" onclick="Collapse(\'' + attribute + '\')"><i class="fas fa-chevron-up"></i></a>');
+}
+
+function fillValues() {
+    $("#Input_Prolog").val(prologue.getEditorValue());
+    $("#Input_Article").val(body.getEditorValue());
+    $("#Input_Epilog").val(epilogue.getEditorValue());
+   }
+
+   function Save() {
+     $("#Input_Publish").prop('checked', false);
+   }
+
+   function Publish() {
+      $("#Input_Publish").prop('checked', true);
+   }
+</script>
+@section Scripts {
+   <partial name="_ValidationScriptsPartial" />
+}

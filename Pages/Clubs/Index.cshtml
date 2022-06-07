@@ -1,0 +1,108 @@
+﻿@page
+@model Stories.Pages.Clubs.IndexModel
+@{
+}
+
+<h1>Clubs</h1>
+@if (User.Identity.IsAuthenticated)
+{
+   <hr>
+   <h3> Welcome @Model.ActualUser.DisplayedName </h3>
+   <div class="row">
+      <div class="col">
+         <b>Welcome in clubs!</b><br /><br />
+         Here you can create your own club or join clubs which created other users. Club can be private - and then you will have to invite people to join, or public - and then everyone who finds the club interesting, can join it.
+         <br>
+         <br>
+         Clubs are here to group together Authors with similar or common topic of interest. It is up to you our valued Authors, to make them yours. You can for example create group for "Crime stories", other authors will join your club
+         and share within their crime stories. <br />
+         You can of course also debate in our chat - create room for your club and just enjoy. If you wish more of functionalities, just <a href="mailto:stories@afrowave.ltd"> contact us </a>
+      </div>
+   </div>
+   @if (User.Identity.IsAuthenticated && Model.ClubId < 1)
+   {
+      <hr />
+      <h3>Create new club</h3>
+      <form method="post">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto">
+            <div class="col-md-4 p-1" style="margin-bottom: 5px;">New club name:</div>
+            <div class="col-md-8 p-1" style="margin-bottom: 5px;">
+               <input asp-for="Input.ClubName" class="form-control" />
+            </div>
+         </div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto">
+            <div class="col-md-4 p-1" style="margin-bottom: 5px;">What is this club about?</div>
+            <div class="col-md-8 p-1" style="margin-bottom: 5px;">
+               <input asp-for="Input.ClubDescription" class="form-control" />
+            </div>
+         </div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto;">
+            <div class="col-4" style="text-align: left; margin-left: 0px; padding-left: 2px;">Everyone can join:</div>
+            <div class="col-5"><input asp-for="Input.IsPublic" checked class="form-control" /></div>
+            <div class="col-3 text-right">
+               <button class="btn btn-primary mr-0">Create Club</button>
+            </div>
+         </div>
+      </form>
+   }
+   <hr />
+}
+
+<!-- All user see list of public clubs and private clubs where they are members -->
+@if (Model.ClubsCount > 0)
+{
+   <table width="90%" style="margin-right: auto; margin-left: auto">
+      <tr style="padding-bottom: 5px;">
+         <th>Club Name:</th>
+         <th>Created:</th>
+         <th>Members:</th>
+         <th>Articles:</th>
+         <th>Admin:</th>
+         <th>You are owner:</th>
+         <th>You are member:</th>
+         <th></th>
+      </tr>
+
+      @foreach (var club in Model.Clubs)
+      {
+         <tr>
+            <td>
+               @club.ClubName
+            </td>
+            <td>
+               @club.ClubCreated.Day/@club.ClubCreated.Month/@club.ClubCreated.Year
+            </td>
+            <td style="text-align: center;">@Model.ClubUsers.Where(s => s.ClubId == club.Id).Count()</td>
+            <td style="text-align: center;">@Model.ClubArticles.Where(s => s.ClubId == club.Id).Count()</td>
+            <td style="text-align: center;">@club.Owner.DisplayedName</td>
+            <td style="text-align: center;">
+               @if (club.OwnerId == Model.ActualUser.Id)
+               {
+                  <span style="font-size: 13px" class="success"><i class="fas fa-check success"></i></span>
+               }
+               @if (club.OwnerId != Model.ActualUser.Id)
+               {
+                  <span style="font-size: 13px" class="error"><i class="fas fa-times"></i></span>
+               }
+            </td>
+            <td style="text-align: center;">
+               @if (Model.ClubUsers.Where(s => s.ClubId == club.Id).Where(s => s.UserId == Model.ActualUserId).Any())
+               {
+                  <span style="font-size: 13px" class="success"><i class="fas fa-check success"></i></span>
+               }
+               @if (!Model.ClubUsers.Where(s => s.ClubId == club.Id).Where(s => s.UserId == Model.ActualUserId).Any())
+               {
+                  <span style="font-size: 13px" class="error"><i class="fas fa-times"></i></span>
+               }
+            </td>
+            <td style="text-align: center;"><a href="/Clubs/Details?id=@club.Id">See details</a></td>
+         </tr>
+      }
+   </table>
+}
+
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

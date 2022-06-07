@@ -1,0 +1,105 @@
+﻿@page
+@model Stories.Pages.Articles.EditModel
+
+@{
+   ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Article</h4>
+<hr />
+<div class="row">
+   <div class="col-md-4">
+      <form method="post">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <input type="hidden" asp-for="Article.Id" />
+         <div class="form-group">
+            <label asp-for="Article.Title" class="control-label"></label>
+            <input asp-for="Article.Title" class="form-control" />
+            <span asp-validation-for="Article.Title" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.Prolog" class="control-label"></label>
+            <input asp-for="Article.Prolog" class="form-control" />
+            <span asp-validation-for="Article.Prolog" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.Body" class="control-label"></label>
+            <input asp-for="Article.Body" class="form-control" />
+            <span asp-validation-for="Article.Body" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.Epilog" class="control-label"></label>
+            <input asp-for="Article.Epilog" class="form-control" />
+            <span asp-validation-for="Article.Epilog" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.UserId" class="control-label"></label>
+            <select asp-for="Article.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+            <span asp-validation-for="Article.UserId" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.ArticleAdded" class="control-label"></label>
+            <input asp-for="Article.ArticleAdded" class="form-control" />
+            <span asp-validation-for="Article.ArticleAdded" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.ArticlePublished" class="control-label"></label>
+            <input asp-for="Article.ArticlePublished" class="form-control" />
+            <span asp-validation-for="Article.ArticlePublished" class="text-danger"></span>
+         </div>
+         <div class="form-group form-check">
+            <label class="form-check-label">
+               <input class="form-check-input" asp-for="Article.IsPublished" /> @Html.DisplayNameFor(model => model.Article.IsPublished)
+            </label>
+         </div>
+         <div class="form-group form-check">
+            <label class="form-check-label">
+               <input class="form-check-input" asp-for="Article.IsBanned" /> @Html.DisplayNameFor(model => model.Article.IsBanned)
+            </label>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.BannedBy" class="control-label"></label>
+            <input asp-for="Article.BannedBy" class="form-control" />
+            <span asp-validation-for="Article.BannedBy" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.AgeRestrictionId" class="control-label"></label>
+            <select asp-for="Article.AgeRestrictionId" class="form-control" asp-items="ViewBag.AgeRestrictionId"></select>
+            <span asp-validation-for="Article.AgeRestrictionId" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.RecommendedAgeGroupId" class="control-label"></label>
+            <select asp-for="Article.RecommendedAgeGroupId" class="form-control" asp-items="ViewBag.RecommendedAgeGroupId"></select>
+            <span asp-validation-for="Article.RecommendedAgeGroupId" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.LastChange" class="control-label"></label>
+            <input asp-for="Article.LastChange" class="form-control" />
+            <span asp-validation-for="Article.LastChange" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.FirstPublished" class="control-label"></label>
+            <input asp-for="Article.FirstPublished" class="form-control" />
+            <span asp-validation-for="Article.FirstPublished" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Article.BannedAt" class="control-label"></label>
+            <input asp-for="Article.BannedAt" class="form-control" />
+            <span asp-validation-for="Article.BannedAt" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+         </div>
+      </form>
+   </div>
+</div>
+
+<div>
+   <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

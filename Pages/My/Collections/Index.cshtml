@@ -1,0 +1,223 @@
+﻿@page
+@model Stories.Pages.My.Collections.IndexModel
+@{
+}
+<div class="row">
+   <div class="col-3 redborder-right" style="padding: 5px;">
+      <h4>Your collections: </h4>
+      <hr />
+      <ul>
+
+         @foreach (var collection in Model.userCollections)
+         {
+            <li class="font-weight-bold">
+               <a href="#" onclick="showDetails(@collection.Id)">@collection.CollectionName</a>
+            </li>
+         }
+      </ul>
+      </hr>
+   </div>
+   <div class="col-9">
+      <h3>Create new collection</h3>
+      <form method="post">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto">
+            <div class="col-md-4 p-1" style="margin-bottom: 5px;">New Collection name:</div>
+            <div class="col-md-8 p-1" style="margin-bottom: 5px;">
+               <input asp-for="Input.Name" class="form-control" />
+            </div>
+         </div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto">
+            <div class="col-md-4 p-1" style="margin-bottom: 5px;">New Collection description:</div>
+            <div class="col-md-8 p-1" style="margin-bottom: 5px;">
+               <input asp-for="Input.Description" class="form-control" />
+            </div>
+         </div>
+         <div class="row" style="width: 90%; margin-left: auto; margin-right: auto;">
+            <div class="col-8" style="text-align: left; margin-left: 0px; padding-left: 2px;"></div>
+            <div class="col-4 text-right" style="text-align: right; margin-right: 0px;">
+               <button type="submit" class="btn btn-primary mr-0">Create Collection</button>
+            </div>
+         </div>
+      </form>
+      <hr>
+      <div id="collectiondetails" style="display: none;">
+         <form id='articles' name='articles'>
+            <div id="details" style='width:90%; margin-left: auto; margin-right: auto;'>
+            </div>
+         </form>
+      </div>
+   </div>
+
+   <script src="~/lib/tabulator/js/tabulator.js"></script>
+   <script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+   <script>
+
+
+
+/*** Collection Hub ***/
+
+const Connect = new signalR.HubConnectionBuilder()
+    .withUrl("/collectionhub")
+    .configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect([2000, 4000, 6000, 10000, 20000, 30000, 30000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 60000, 600000, 600000, 600000, 600000, 600000, 600000])
+    .build();
+
+Connect.start().then(function () {
+    console.info("Connected");
+    }).catch(function (err) {
+    return console.error(err.toString());
+});
+
+function showDetails(articleId) {
+    console.info("showingDetails");
+    Connect.invoke("GetArticlesInCollection", articleId).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+var draggedObjectId;
+var draggedObjectValue;
+var draggedObjectOriginalPosition;
+var colId;
+var droppedAtId;
+
+Connect.on("articleListReceived", (jsonArticles, jsonData, collectionId, collectionName) =>  {
+    var htmlList = "<h4>Your articles in actual collection. You can sort them by dragging up or down.</h4>";
+    var articlesCount = 0;
+    colId = collectionId;
+    if (jsonArticles != null) {
+         var json = JSON.parse(jsonArticles);
+        // variables for dragging operations
+
+        articlesCount = json.length;
+            htmlList +="";
+
+        for (i = 0; i < articlesCount; i++) {
+            // how to make
+            htmlList +="<div class='row' style='padding: 10px'>";
+           htmlList += "<div class='col-1 sortable text-center drop' style='margin-right: 0px; '>";
+            htmlList += json[i].OrderNumber;
+            htmlList +="</div>";
+           htmlList += "<div class='col-10 drop drag container-fluid sortable' ondrop='droppedAt("+json[i].OrderNumber +")' ondrag='dragObject("+json[i].ACId+",\""+ json[i].ArticleName +"\"," + json[i].OrderNumber +")' id='"+json[i].ACId+"' style='margin-left: 0px;'>";
+            htmlList +=json[i].ArticleName;
+            htmlList +="</div>";
+            htmlList +="<div class='col-1 sortable ml-0 text-center' onclick='RemoveArticle("+json[i].OrderNumber +")' style='text-size: 14px; text-weight: bold;'><a href='#'><i class='fas fa-dumpster'></i></a></div>";
+            htmlList +="</div>";
+            }
+         }
+            htmlList +="<div class='row' style='padding: 10px' >";
+            htmlList +="<div class='col-1 sortable text-center' style='margin-right: 0px;'>";
+            htmlList += articlesCount+1;
+            htmlList +="</div>";
+            htmlList +="<div class='col-11 container-fluid' style='padding: 0px; margin-left: 0px;'>";
+            htmlList +="<input type='hidden' name='CollectionId' value="+collectionId+">";
+            htmlList +="<select name='ArticleId' class='sortable form-control' id='addArticle' style='margin: 0px; width: 100%'>";
+            htmlList +="<option value=''>Add the article</option>";
+            htmlList +="<option value=''> --- </option>";
+            // get details from jsonArticles
+            console.log(jsonArticles);
+
+            if (jsonData != null) {
+                console.log(jsonData);
+                var articles = JSON.parse(jsonData);
+                var articlesCount = articles.length;
+                console.log(articlesCount);
+                for (j = 0; j < articlesCount; j++) {
+
+                htmlList +="<option value="+articles[j].ArticleId+">"+articles[j].ArticleName+"</option>";
+                }
+            }
+
+            htmlList +="</select>";
+            htmlList +="</div>";
+            htmlList +="</div>";
+            htmlList +="<div class='row'>";
+            htmlList +="<div class='col-6 mt-2'><button class='btn btn-danger sortable' id='del' onclick='deleteCollection("+collectionId+")' style='padding-left: 2.5em; padding-right: 2.5em;'>Delete collection</button></div>";
+            htmlList +="<div class='col-6 text-right mt-2'><button class='btn btn-primary sortable' onclick='saveChanges()' style='padding-left: 2.5em; padding-right: 2.5em;'>Add to the collection</button></div>";
+            htmlList +="</div>";
+            htmlList +="</form>";
+            $("#details").html(htmlList);
+            $("#collectiondetails").show(300);
+    $(function () { $(".drag").draggable({
+            drag: function (event, ui) {
+                $(this).css("background-color","rgba(128, 0, 0, 0.2)");
+            }
+        })
+    });
+
+    $(function () { $(".drop").droppable({
+        drop: function (event, ui) {
+            $(this).addClass("ui-state-highlight");
+            },
+        over: function(event, ui) {
+            $(this).css("background-color", "rgba(0, 128, 0, 0.2)");
+            }
+        });
+    });
+
+});
+
+ Connect.on("Reload", () => {
+      location.reload();
+ });
+
+function saveChanges() {
+    console.log("Saving");
+}
+
+function deleteCollection(collectionId) {
+    Connect.invoke("DeleteCollection", collectionId)
+    .catch(function (err) {
+        return console.error(err.toString());
+        })
+    event = document.getElementById("del")
+    event.preventDefault();
+}
+
+function RemoveArticle(articleId) {
+    Connect.invoke("RemoveArticle", colId, articleId)
+    .catch(function(err){
+        return console.error(err.ToString());
+
+        })
+}
+
+function dragObject(ArticleId, ArticleName, OrderNr) {
+    draggedObjectId = ArticleId;
+    draggedObjectValue = ArticleName;
+    draggedObjectOriginalPosition = OrderNr;
+}
+function isIn(event, id){
+    event.preventDefault();
+    console.info("Enteted " + id);
+    droppedAtId= id;
+}
+/*function () {
+    document.addEventListener("dragover", function( event ) {
+        // prevent default to allow drop
+        event.preventDefault();
+    }, false);
+  }
+  */
+function droppedAt(id) {
+
+    Connect.invoke("ChangePosition" , draggedObjectOriginalPosition, id, colId).catch(function (err) {
+        return console.error(err.toString());
+        /* we need to get whole table and resord OrderByInEach */
+
+    })
+ };
+
+const form = document.getElementById("articles");
+form.addEventListener('submit', (e) => {
+  e.preventDefault()
+  const formData = new FormData(e.target)
+  const json = JSON.stringify(Object.fromEntries(formData));
+  console.log(json)
+  Connect.invoke("SaveChanges", json).catch(function (err) {
+        return console.error(err.toString());
+    });
+})
+   </script>

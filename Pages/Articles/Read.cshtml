@@ -1,0 +1,154 @@
+﻿@page
+@model Stories.Pages.Articles.ReadModel
+@{
+}
+
+<hr>
+<div>
+   <span class="redactor"><a href="/Articles/CategoryGroups?id=@Model.CategoryGroup.Id"><i>@Model.CategoryGroup.GroupName</i></a></span> |
+   <span class="admin"><a href="/Articles/Categories?id=@Model.Category.Id"><i class="administrator"> @Model.Category.CategoryName</i></a></span> |
+   <span class="success"><b><i class="fas fa-eye"></i> (@Model.ReadCount)</b></span>
+</div>
+<hr />
+<h1>@Model.Article.Title</h1>
+<h3 style="font-size:14px;" class="my"><i>By: @Model.Author.DisplayedName</i></h3>
+<hr />
+<div>
+   @if (Model.displayProlog)
+   {
+      <p style="font-size:small"><i>Prologue:</i></p>
+      @Html.Raw(Model.Article.Prolog)
+      <hr />
+   }
+   <div>
+      @Html.Raw(Model.Article.Body)
+   </div>
+   <hr />
+   @if (Model.displayEpilog)
+   {
+      <p style="font-size: small"><i>Epilogue:</i></p>
+      @Html.Raw(Model.Article.Epilog)
+      <hr />
+   }
+</div>
+<!--
+
+Article body done, now buttons , stars and critics
+If User is Author - can't like or star or criticize,
+If user already give like - can't do again.
+If user already gave stars - can't do it again.
+User can add only one critic - later on edit it.
+
+-->
+<div class="row">
+   <div class="col-3">
+      <!-- Likes -->
+      @if (Model.hasActualLikedArticle)
+      {
+         <span style="font-size: 16px; color: green;"><a href="#" onclick="like('@Model.Article.Id')"><i class="far fa-thumbs-up"></i> @Model.LikesCount</a></span>
+      }
+      @if (Model.viewerIsAuthor)
+      {
+         <span style="font-size: 16px; color: green;"><a href="#"><i class="far fa-thumbs-up"></i> @Model.LikesCount</a></span>
+      }
+      @if (!Model.viewerIsAuthor && !Model.hasActualLikedArticle)
+      {
+         <span style="font-size: 16px;"><a href="#" onclick="like('@Model.Article.Id')"><i class="far fa-thumbs-up"></i> @Model.LikesCount</a></span>
+      }
+   </div>
+   <div class="col-6" style="margin-left:auto; margin-right: auto; font-size: 16px; text-align: center;">
+      <!-- Stars -->
+      @for (int i = 1; i < 6; i++)
+      {
+         if (i <= Model.stars)
+         {
+            <span style="color: gold;"><i class="fas fa-star"></i></span>
+            if (!Model.viewerIsAuthor)
+            {
+               <span style="color: gold;"><i class="fas fa-star"></i></span>
+            }
+            else
+            {
+               <span style="color: gold;"><i class="fas fa-star"></i></span>
+            }
+         }
+         else
+         {
+            if (!Model.viewerIsAuthor)
+            {
+               <span style="color: grey;"><i class="fas fa-star"></i></span>
+            }
+            else
+            {
+               <span style="color: grey;"><i class="fas fa-star"></i></span>
+            }
+         }
+
+      }
+      <br />From @Model.StarsGivers authors
+   </div>
+   <div class="col-3 text-right" style="font-size: 15px;">
+      Critics (@Model.CriticsCount) <span id="linkId"><a href="#" onclick="OpenCritics()"><i class="fas fa-chevron-down"></i></a></span>
+   </div>
+   <div id="critics" class="container-fluid" style="display:none;">
+      <hr />
+      <form method="post">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div style="margin-top: 5px; margin-bottom: 5px; margin-left: 5px;"><b>Write the critic:</b></div>
+         <textarea asp-for="Input.Text" class="form-control" style="padding: 5px; margin: 5px;">
+        </textarea>
+         <div class="row" style="margin-top: 10px;">
+            <div class='col-10' style="text-align:center;">Be constructive, polite, helpful and kind</div>
+            <div class='col-2' style="text-align: right; margin-left: auto;"><button class="btn btn-primary" style="margin-left: 10px; margin-right: 10px;">Add critic</button></div>
+         </div>
+         <input type="hidden" asp-for="Input.ArticleId" value="@Model.Article.Id" />
+      </form>
+      <hr />
+      @if (Model.CriticsCount > 0)
+      {
+         <h3 style="text-align: center;">Critics:</h3>
+         foreach (var critic in Model.Critics)
+         {
+            <div class="row">
+               <div class="col-10 offset-1">
+                  <hr style="margin-bottom: 0px;" />
+                  <div class="container-fluid" style="background-color: rgba(32, 32, 32, 0.2); padding-top: 5px; padding-bottom: 5px; margin-top: 0px;">
+                     <b>@critic.CriticAdded</b> | From @critic.User.DisplayedName
+                  </div>
+               </div>
+               <div class="col-10 offset-1">
+                  <div style="margin-top: 10px; padding: 5px;">
+                     @Html.Raw(critic.CriticMessage)
+                  </div>
+                  @if (Model.viewerIsAuthor)
+                  {
+                     <div class="small" style="text-align: right"><a href="./DeleteCritic?id=@critic.Id">Delete</a></div>
+                  }
+                  <hr />
+               </div>
+            </div>
+         }
+      }
+   </div>
+</div>
+@section Scripts {
+   <partial name="_ValidationScriptsPartial" />
+}
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+
+   function OpenCritics() {
+      $("#critics").show(300);
+      $("#linkId").html('<a href="#" onClick="CloseCritics()"><i class="fas fa-chevron-up"></i></a>');
+      $("#critics").focus();
+   }
+
+   function CloseCritics() {
+      $("#critics").hide(300);
+      $("#linkId").html('<a href="#" onClick="OpenCritics()"><i class="fas fa-chevron-down"></i></a>');
+   }
+
+   $(".articleCount").html("@Model.ArticlesCount");
+   $(".categoriesCount").html("@Model.CategoriesCount");
+   $(".groupsCount").html("@Model.CategoryGroupsCount");
+</script>

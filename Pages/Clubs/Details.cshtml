@@ -1,0 +1,265 @@
+﻿@page
+@model Stories.Pages.Clubs.DetailsModel
+@{
+}
+<!-- display club details (who is no member can join) owner can give ownership to other group member -->
+<div>
+   @if (!Model.selectedClub.isPublic)
+   {
+      <h3 style="background-color: rgba(128, 0, 0, 0.2); line-height: 2em; align-content:center; align-items: center;">Private Club @Model.SelectedClubName</h3>
+   }
+   @if (Model.selectedClub.isPublic)
+   {
+      <h3>Club @Model.selectedClub.ClubName</h3>
+   }
+
+   <hr>
+   <div class="row">
+      <div class="col-5">
+         <h3>Authors in the club:</h3>
+         <hr />
+         <table style="width:95%; margin-left: auto; margin-right: auto">
+            <tr style="background-color: rgba(64, 64, 64, 0.2)">
+               <th style="line-height: 2em;"></th>
+               <th style="line-height: 2em;">Author:</th>
+               <th style="line-height: 2em;">Articles:</th>
+               <th style="line-height: 2em;">Critics:</th>
+               <th></th>
+            </tr>
+
+            @foreach (var clubuser in Model.AuthorsToPublish)
+            {
+
+               <tr>
+                  <td>
+                     @if (clubuser.hasPicture)
+                     {
+
+                        <img src='/Images/@clubuser.AuthorId/ProfilePhoto_32.png' />
+                     }
+                     @if (!clubuser.hasPicture)
+                     {
+                        <img src="/Images/anonymous.png" />
+                     }
+                  </td>
+                  <td>
+                     <a href="/Authors/Index?id=@clubuser.AuthorId">@clubuser.DisplayedName</a>
+                  </td>
+                  <td>
+                     @clubuser.ArticlesCount
+                  </td>
+                  <td>
+                     @clubuser.ArticlesCount
+                  </td>
+                  <td>
+                     @if (Model.userIsOwner)
+                     {
+                        @if (@clubuser.AuthorId != Model.ActualUserId)
+                        {
+                           <a href="/Clubs/RemoveAuthor?id=@clubuser.AuthorId&clubId=@Model.selectedClub.Id">Remove Author</a>
+                        }
+                     }
+                  </td>
+               </tr>
+            }
+         </table>
+      </div>
+      <div class="col-7">
+         <h3>Article in the club:</h3>
+         <hr />
+         @if (Model.UserArticle != null && Model.UserArticle.Count > 0)
+         {
+            <div class="row" style="align-items:center">
+               <div class="col-4">Add to the club:</div>
+               <div class="col-4">
+                  <select class="form-control" id="articleId">
+                     @foreach (var article in Model.UserArticle)
+                     {
+                        <option value="@article.Id">@article.Title</option>
+                     }
+                  </select>
+               </div>
+               <div class="col-4" style="margin-left: auto; text-align:right;"><button class="btn btn-primary" style="margin-left: auto; text-align:right;" onclick="AddArticle('@Model.selectedClub.Id')">Add to club</button></div>
+            </div>
+            <hr />
+         }
+
+         @if (!Model.showArticleList)
+         {
+            <span>No Article in the club jet</span>
+         }
+         @if (Model.showArticleList)
+         {
+            <div id="ArticleTable" style="width : 100%">
+               There are articles in this club
+            </div>
+         }
+      </div>
+   </div>
+   <hr />
+   <div class="row" style="align-items: center">
+      <!-- List of articles owner can remove, member can add, owner and member can send invitations -->
+      @if (Model.userIsOwner)
+      {
+         <!-- Owner can invite to club, remove from club, pass ownership or delete club -->
+         @if (Model.Outsider.Any())
+         {
+            <div class="col-1" style="text-align: right;">Invite:</div>
+            <div class="col-2">
+               <select class="form-control" id="inviteUser">
+                  @foreach (var guest in Model.Outsider)
+                  {
+                     <option value="@guest.AuthorId" id="@guest.AuthorId">@guest.AuthorName</option>
+
+                  }
+               </select>
+            </div>
+            <script>var jsvalue = $("#inviteUser").val();</script>
+            <div class="col-1"><button class="btn btn-info" onclick="Invite(@Model.selectedClub.Id, jsvalue)">Invite</button></div>
+         }
+         @if (!Model.Outsider.Any())
+         {
+            <div class="col-4"></div>
+         }
+
+         @if (Model.AuthorsExceptActual.Any())
+         {
+            <div class="col-2" style="text-align:right">Pass ownership to:</div>
+            <div class="col-2">
+
+               <select class="form-control" id="passOwnership">
+                  @foreach (var author in Model.AuthorsExceptActual)
+                  {
+                     <option value="@author.AuthorId">@author.AuthorName</option>
+                  }
+               </select>
+            </div>
+            <div class="col-2" style="text-align: center;"><button class="btn btn-danger" style="margin-left: auto;" onclick="PassOwnership('@Model.selectedClub.Id')">Pass ownership</button></div>
+         }
+         @if (!Model.AuthorsExceptActual.Any())
+         {
+            <div class="col-6"></div>
+         }
+         <div class="col-2" style="margin-left: auto; text-align:right;"><button class="btn btn-danger" style="margin-left: auto; background-color: rgba(128,0,0,0.7)" onclick="window.location ='/Clubs/Delete?id=@Model.selectedClub.Id'">Delete Club</button></div>
+
+      }
+      @if (Model.userIsMember && !Model.userIsOwner)
+      {
+         <!-- User can invite to club or leave the club -->
+         @if (Model.Outsider.Any())
+         {
+            <div class="col-1" style="text-align: right;">Invite:</div>
+            <div class="col-2">
+               <select class="form-control" id="inviteUser">
+                  @foreach (var guest in Model.Outsider)
+                  {
+                     <option value="@guest.AuthorId" id="@guest.AuthorId">@guest.AuthorName</option>
+
+                  }
+               </select>
+            </div>
+            <div class="col-1"><button class="btn btn-info" style="margin-left: auto; text-align:right; margin-right: 10px;" onclick="Invite(@Model.selectedClub.Id, jsvalue)">Invite</button></div>
+         }
+         @if (!Model.Outsider.Any())
+         {
+            <div class="col-4"></div>
+         }
+         <div class="col-6"></div>
+         <div class="col-2" style="margin-left: auto; text-align:right;"><button class="btn btn-danger" style="margin-left: auto; background-color: rgba(128,0,0,0.7)" onclick="window.location='/Clubs/RemoveAuthor?id=@Model.ActualUserId&clubId=@Model.selectedClub.Id'">Leave Club</button></div>
+
+      }
+      @if (!Model.userIsMember)
+      {
+         if (@Model.selectedClub.isPublic)
+         {
+            <div class="col-2" style="margin-left: auto; text-align: right;"><button class="btn btn-primary" onclick="window.location='/Clubs/Join?id=@Model.selectedClub.Id'">Join Club</button></div>
+         }
+         <!-- User can join the club if club is public -->
+      }
+   </div>
+   <hr />
+</div>
+
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+
+   function AddArticle(groupId) {
+    var articleId = $("#articleId").val();
+    window.location = "/Clubs/AddArticle?id="+articleId+"&groupId="+groupId;
+   }
+
+    function PassOwnership(clubId) {
+        var userId = $("#passOwnership").val();
+        window.location = "/Clubs/PassOwnership?id="+userId+"&clubId="+clubId;
+    }
+
+   function Invite(clubId, userId) {
+      signal.invoke("SendInvitation", clubId, userId);
+      console.info("Remove from list " +userId);
+      $("#" + userId).remove();
+   }
+
+var data = '@Model.jsonArticles';
+
+if (data != ""){
+    data = JSON.parse('@Html.Raw(Model.jsonArticles)');
+}
+
+var articleTable = new Tabulator("#ArticleTable", {
+    data: data,
+    index: "ArticleId",
+    movableRows: true,
+    layout: "fitColumns",
+    responsiveLayout: "hide",
+    tooltips: false,
+    addRowsPos: "top",
+    pagination: "local",
+    paginationSize: 7,
+    movableColumns: true,
+    resizableRows: true,
+    selectable: true,
+    initialSort: [
+    { column: "PublishedDate", dir: "desc" },
+    ],
+    columns: [
+    { title: "Title", field: "Title" },
+    { title: "Author", field: "AuthorName" },
+    {
+            title: "Published", field: "PublishedDate", formatter: function (cell, formatterParams, onRendered) {
+            var d = new Date(cell.getValue());
+            var formated = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+                  return formated;
+            }
+        },
+    { title: "Category", field: "CategoryName" },
+    { title: "Read by", field: "ReadCount" },
+    { title: "Critics", field: "CriticCount" },
+    {
+           title: "Read", field: "LinkRead", formatter: "link", formatterParams: {
+               label: "Read",
+           }
+        },
+    {
+           title: "Delete", field: "LinkDelete", formatter: function(cell, formatterParams, onRendered) {
+               var d = cell.getValue();
+               if (d != "")
+               {
+                   return "<a class='danger' href='"+d+"'>Remove</a>";
+               }
+               else
+               {
+                   return "";
+               }
+
+           }
+        },
+    ]
+});
+
+
+</script>

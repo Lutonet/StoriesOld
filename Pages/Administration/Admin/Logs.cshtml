@@ -1,0 +1,174 @@
+﻿@page
+@model Stories.Pages.Administration.Admin.LogsModel
+@{
+}
+@{
+   ViewData["Title"] = "Logs";
+}
+<div class="text-center mb-1 p-1">
+   <h3>System Log:</h3>
+</div>
+<div class="row">
+   <div class="col-12">
+      <div class="table-striped" id="LogsTable">
+      </div>
+   </div>
+</div>
+<div class="row" id="Details"></div>
+
+<script src="~/lib/tabulator/js/tabulator.js"></script>
+<script src="~/lib/tabulator/js/jquery_wrapper.js"></script>
+
+<script>
+   noLeft();
+   $(document).ready(function () {
+      var table = new Tabulator("#LogsTable", {
+         rowClick: function (e, row) {
+            //e - the click event object
+            //row - row component
+            objectID = row.getData().Id;
+            drawLog("#Details", objectID);
+         },
+         index: "Id",
+         movableRows: true,
+         groupBy: "Level",
+         layout: "fitDataStretch",      //fit columns to width of table
+         minHeight: 300,
+         responsiveLayout: "hide",  //hide columns that dont fit on the table
+         tooltips: true,            //show tool tips on cells
+         addRowPos: "top",          //when adding a new row, add it to the top of the table
+         history: false,             //allow undo and redo actions on the table
+         pagination: "local",       //paginate the data
+         paginationSize: 10,         //allow 7 rows per page of data
+         movableColumns: true,      //allow column order to be changed
+         resizableRows: true,       //allow row order to be changed
+         selectable: true,
+         initialSort: [             //set the initial sort order of the data
+            { column: "Logged", dir: "desc" },
+         ],
+         columns: [
+            { title: "Id", field: "Id" },
+            {
+               title: "Logged", field: "Logged", formatter: function (cell, formatterParams, onRendered) {
+                  var d = new Date(cell.getValue());
+                  var formated = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+                  return formated;
+               }
+            },
+            //  { title: "Machine Name", field: "MachineName" },
+            { title: "Level", field: "Level" },
+            { title: "Message", field: "Message" },
+            // { title: "Logger", field: "Logger" },
+            // { title: "Callsite", field: "Callsite" },
+            // { title: "Exception", field: "Exception" }
+
+         ],
+
+      });
+      var ajaxConfig = {
+         type: "GET", //set request type to Position
+         contentType: 'application/json; charset=utf-8', //set specific content type
+      };
+      var jsonData = $.getJSON("/API/InfoLogs").done(function (data) {
+         table.setData(data);
+      });
+   });
+
+   function drawLog(divId, logId) {
+      var ajaxConfig = {
+         type: "GET", //set request type to Position
+         contentType: 'application/json; charset=utf-8', //set specific content type
+      };
+      $.getJSON("/API/InfoLogs/" + logId).done(function (data) {
+
+         var logged = data.Logged;
+         var machineName = data.MachineName;
+         var level = data.Level;
+         var message = data.Message;
+         var logger = data.Logger;
+         var callsite = data.Callsite;
+         var exception = data.Exception;
+         var htmlResult = "";
+         var rowClass = "";
+         if (level == 'Fatal') rowClass = "error"
+         if (level == 'Info') rowClass = "information";
+         if (level == 'Warn') rowClass = "header";
+         if (level == 'Error') rowClass = "my";
+         if (level == 'Debug') rowClass = "icon";
+         htmlResult += '<div class="col-sm-12 bordered mb-2"><br />';
+         htmlResult += "<tr><td colspan='2'><hr></td><tr>";
+         htmlResult += '<table class="tabletable table-borderless container-fluid">';
+         htmlResult += '<tr>';
+         htmlResult += '<th colspan="2">';
+         htmlResult += '<h3 align="center"> Details for log number: <span class="error">' + logId;
+         htmlResult += '<hr></th>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th width="20%">';
+         htmlResult += '<div align="left">Logged Date and Time:</div>';
+         htmlResult += '</th>';
+         d = new Date(logged);
+         htmlResult += '<td>';
+         htmlResult += '<div>' + d.toLocaleString(); +'</div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th>';
+         htmlResult += '<div align="left">Machine Name:</div>';
+         htmlResult += '</th>';
+         htmlResult += '<td>';
+         htmlResult += '<div class="success">' + machineName + '</div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th>';
+         htmlResult += '<div align="left">Log Level:</div>';
+         htmlResult += '</th>';
+         htmlResult += '<td>';
+         htmlResult += '<div class="' + rowClass + '">' + level.toUpperCase() + '</div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th>';
+         htmlResult += '<div align="left">Message:</div>';
+         htmlResult += '</th>';
+         htmlResult += '<td>';
+         htmlResult += '<div><code>' + message + '</code></div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th>';
+         htmlResult += '<div align="left">Logger:</div>';
+         htmlResult += '</th>';
+         htmlResult += '<td>';
+         htmlResult += '<div><code>' + logger + '</code></div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr>';
+         htmlResult += '<th>';
+         htmlResult += '<div align="left">Callsite:</div>';
+         htmlResult += '</th>';
+         htmlResult += '<td>';
+         htmlResult += '<div><code>' + callsite + '</code></div>';
+         htmlResult += '</td>';
+         htmlResult += '</tr>';
+         htmlResult += '<tr><td colspan="2"><hr></td><tr>';
+         if (exception != "") {
+            htmlResult += '<tr>';
+            htmlResult += '<th>';
+            htmlResult += '<div align="left">Exception:</div>';
+            htmlResult += '</th>';
+            htmlResult += '<td>';
+            htmlResult += '<div><code class="error">' + exception + '</code></div>';
+            htmlResult += '</td>';
+            htmlResult += '</tr>';
+            htmlResult += "<tr><td colspan='2'><hr></td><tr>";
+         }
+         htmlResult += '</table>';
+         $(divId).html(htmlResult);
+      });
+   }
+</script>
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,233 @@
+a {
+    color: #fa9929;
+}
+
+    a:hover {
+        color: #660000;
+    }
+
+.btn-primary {
+    color: #DADADA;
+    background-color: #289428;
+    border-color: #DADADA;
+}
+
+    .btn-primary:hover {
+        color: #DADADA;
+        border-color: #DADADA;
+        background-color: #220000;
+    }
+
+.btn-default {
+    color: #fa9929;
+}
+
+    .btn-default:hover {
+        color: #990000;
+    }
+
+.btn-danger {
+    color: #cacaca;
+    background-color: #660000;
+}
+
+    .btn-danger:hover {
+        background-color: #220000;
+    }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fa9929;
+    background-color: #050505;
+    border-color: #050505;
+    color: #990000;
+}
+
+.border-top {
+    border-top: 1px solid #1A1A1A;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #1A1A1A;
+}
+
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(100, 100, 100, 0.5);
+}
+
+body {
+    background-color: #050505;
+    color: #DADADA;
+}
+
+.navbar {
+    background-color: rgba(56, 56, 56, 0.8);
+}
+
+.nav-link:active {
+    color: #ff0808;
+}
+
+.nav-link:hover {
+    color: #990000;
+}
+
+.nav-link:focus {
+    color: #990000;
+}
+
+.nav-item {
+    color: #00aaaa;
+}
+
+input {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        background-color: #222222, !important;
+        color: #DADADA !important;
+        -webkit-text-fill-color: #DADADA !important;
+        transition: background-color 1s ease-in-out 5000s !important;
+    }
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: #222222 !important;
+    color: #DADADA !important;
+    -webkit-text-fill-color: #DADADA !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px #440000;
+}
+
+.navbar-toggler-icon {
+    color: #222222;
+}
+
+.icon {
+    color: #DADADA;
+}
+
+.header {
+    color: #990000;
+}
+
+.success {
+    color: #289428;
+}
+
+.error {
+    color: #aa0000;
+}
+
+.information {
+    color: #0000aa;
+    font-size: 13px;
+}
+
+.my {
+    color: #6600dd;
+}
+
+.moderator {
+    color: dodgerblue;
+}
+
+.redactor {
+    color: #00aaaa;
+}
+
+.administrator {
+    color: #bb0000;
+}
+
+.side-menu {
+    background-color: rgba(56, 56, 56, 0.8);
+}
+
+.room-button {
+    border-color: #cccccc;
+    color: #DADADA;
+    background: #222222;
+}
+
+    .room-button:hover {
+        background-color: #ff0808;
+    }
+
+.chat-input {
+    background-color: rgba(56, 56, 56, 0.8);
+    color: #DADADA;
+}
+
+.bubble {
+    background-color: #632121b6;
+    border-color: #632121b6;
+    color: #DADADA;
+}
+
+.bubble-bottom-left:before {
+    border-left: #632121b6;
+    border-top: #632121b6;
+}
+
+.chat-body {
+    background-image: url("/img/chat-background-dark.jpg");
+    background-attachment: fixed;
+}
+
+.form-control {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+    .form-control:disabled {
+        background-color: #220000;
+        color: gray;
+    }
+
+.input-group-text {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+.form-control:valid {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+.form-control:active {
+    background-color: #220000;
+    color: gray;
+}
+
+input {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.modal {
+    background-color: rgba(25, 25, 25, 0.8);
+}
+
+.modal-body > header {
+    color: #DADADA;
+}
+
+.modal-body {
+    background-color: #220000;
+}
+
+.tooltip .tooltiptext {
+    background-color: #220000;
+    color: #DADADA;
+}
+
+/*# sourceMappingURL=chat.site-dark.css.map */

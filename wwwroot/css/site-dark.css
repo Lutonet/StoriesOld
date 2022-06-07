@@ -1,0 +1,280 @@
+:root {
+    --jd-color-background-default: $defaultBackground;
+    --jd-color-border: $headerLinkFocus;
+    --jd-color-panel: $defaultBackground;
+    --jd-color-icon: $error;
+}
+
+a {
+    color: #fa9929;
+}
+
+    a:hover {
+        color: #cacaca;
+    }
+
+.redborder {
+    border: #440000 1px solid;
+}
+
+.redborder-right {
+    border-right: #440000 1px solid;
+}
+
+.redborder-left {
+    border-left: #440000 1px solid;
+}
+
+.redborder-top {
+    border-left: #440000 1px solid;
+}
+
+.redborder-bottom {
+    border-left: #440000 1px solid;
+}
+
+.btn-primary {
+    color: #DADADA;
+    background-color: gray;
+    border-color: #DADADA;
+}
+
+    .btn-primary:hover {
+        color: #DADADA;
+        border-color: #DADADA;
+        background-color: #220000;
+    }
+
+.btn-default {
+    color: #fa9929;
+}
+
+    .btn-default:hover {
+        color: #990000;
+    }
+
+.btn-danger {
+    color: #cacaca;
+    background-color: #660000;
+}
+
+    .btn-danger:hover {
+        background-color: #220000;
+    }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fa9929;
+    background-color: #050505;
+    border-color: #050505;
+    color: #990000;
+}
+
+.border-top {
+    border-top: 1px solid #1A1A1A;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #1A1A1A;
+}
+
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(100, 100, 100, 0.5);
+}
+
+body {
+    background-color: #050505;
+    color: #DADADA;
+}
+
+.navbar {
+    background-color: rgba(56, 56, 56, 0.8);
+}
+
+.nav-link:active {
+    color: #ff0808;
+}
+
+.nav-link:hover {
+    color: #990000;
+}
+
+.nav-link:focus {
+    color: #990000;
+}
+
+.nav-item {
+    color: #00aaaa;
+}
+
+.left {
+    background-color: #050301;
+    color: #00aa00;
+    font-family: Consolas;
+    border: solid 1px #222222;
+}
+
+.body {
+    border-color: #222222;
+    background-color: #050505;
+    color: #DADADA;
+}
+
+.form-control {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+    .form-control:disabled {
+        background-color: #220000;
+        color: gray;
+    }
+
+.input-group-text {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+.form-control:valid {
+    background-color: #222222;
+    color: #DADADA;
+}
+
+.form-control:active {
+    background-color: #220000;
+    color: gray;
+}
+
+input {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        background-color: #222222, !important;
+        color: #DADADA !important;
+        -webkit-text-fill-color: #DADADA !important;
+        transition: background-color 1s ease-in-out 5000s !important;
+    }
+
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+    background-color: #222222 !important;
+    color: #DADADA !important;
+    -webkit-text-fill-color: #DADADA !important;
+    transition: background-color 1s ease-in-out 5000s !important;
+}
+
+.form-control:hover {
+    background-color: #220000;
+}
+
+.form-control:focus {
+    background-color: #220000;
+    color: #DADADA;
+}
+
+hr {
+    border: 0;
+    border-top: solid 1px #440000;
+}
+
+.navbar-toggler-icon {
+    color: #222222;
+}
+
+.icon {
+    color: #DADADA;
+}
+
+.header {
+    color: #990000;
+}
+
+.info {
+    border-color: #660000;
+    color: #DADADA;
+}
+
+.success {
+    color: #6eb96e;
+}
+
+.error {
+    color: #aa0000;
+}
+
+.information {
+    color: #0000aa;
+    font-size: 13px;
+}
+
+.my {
+    color: #6600dd;
+}
+
+.moderator {
+    color: dodgerblue;
+}
+
+.redactor {
+    color: #00aaaa;
+}
+
+.administrator {
+    color: #bb0000;
+}
+
+datepicker-input {
+    color: #DADADA;
+    background-color: #050505;
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.datepicker-toggle-button {
+    -webkit-tap-highlight-color: #cccccc;
+}
+
+.ui-datepicker-month {
+    background-color: #990000;
+    color: #cccccc;
+    border: #440000;
+}
+
+.ui-datepicker-year {
+    background-color: #990000;
+    color: #cccccc;
+    border: #440000;
+}
+
+.table {
+    color: #DADADA;
+    background-color: #220000;
+}
+
+.side-menu {
+    background-color: #050301;
+}
+
+.chat-admin {
+    background-color: rgba(200, 60, 60, 0.2);
+    border-radius: 5px;
+    border: 0px;
+}
+
+.modal {
+    background-color: rgba(25, 25, 25, 0.8);
+}
+
+.modal-body > header {
+    color: #DADADA;
+}
+
+.modal-body {
+    background-color: #220000;
+}
+
+/*# sourceMappingURL=site-dark.css.map */
